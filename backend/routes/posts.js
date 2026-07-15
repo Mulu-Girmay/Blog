@@ -3,6 +3,8 @@ const router = express.Router();
 const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const slugify = require("slugify");
+const { sendNewPostNotification } = require("../services/emailService");
+const User = require("../models/User");
 
 // GET all posts (public)
 router.get("/", async (req, res) => {
@@ -48,9 +50,14 @@ router.post("/", auth, async (req, res) => {
     const { title, content, excerpt, category, tags, featured, plainEnglish } =
       req.body;
 
+    if (!title || !content || !excerpt) {
+      return res
+        .status(400)
+        .json({ error: "Title, content, and excerpt are required" });
+    }
+
     const slug = slugify(title, { lower: true, strict: true });
 
-    // Check if slug exists
     const existing = await Post.findOne({ slug });
     if (existing) {
       return res
@@ -72,10 +79,33 @@ router.post("/", auth, async (req, res) => {
         bio: req.user.bio || "",
         avatar: req.user.avatar || "",
       },
-      readTime: Math.ceil(content.split(" ").length / 200), // ~200 words per minute
+      readTime: Math.ceil(content.split(" ").length / 200),
     });
 
     await post.save();
+
+    // ✅ Send email notification to subscribers
+    try {
+      // Get all users who opted in for new post notifications
+      const subscribers = await User.find({
+        "notifications.newPost": true,
+        role: { $in: ["guest", "author"] }, // Don't notify admins (they wrote it)
+      }).select("email");
+
+      if (subscribers.length > 0) {
+        await sendNewPostNotification(post, subscribers);
+        console.log(
+          `📧 New post notification sent to ${subscribers.length} subscribers`,
+        );
+      }
+    } catch (emailErr) {
+      console.error(
+        "❌ Failed to send new post notifications:",
+        emailErr.message,
+      );
+      // Don't fail the request if email fails
+    }
+
     res.status(201).json(post);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -128,5 +158,19 @@ router.delete("/:id", auth, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// CREATE post (admin/author only)
+router.post("/", auth, async (req, res) => {
+  try {
+    // ✅ Check if user is admin or author
+    if (req.user.role !== "admin" && req.user.role !== "author") {
+      return res
+        .status(403)
+        .json({ error: "Only admins and authors can create posts" });
+    }
 
+    // ... rest of the code
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

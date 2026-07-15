@@ -175,4 +175,48 @@ router.put("/change-password", auth, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// ✅ UPDATE PROFILE (authenticated)
+router.put("/profile", auth, async (req, res) => {
+  try {
+    const { email, bio } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (email) user.email = email;
+    if (bio !== undefined) user.bio = bio;
+
+    await user.save();
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.json(userResponse);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+// ✅ UPDATE PROFILE (authenticated)
+router.put("/profile", auth, async (req, res) => {
+  try {
+    const { email, bio, notifications } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (email) user.email = email;
+    if (bio !== undefined) user.bio = bio;
+    if (notifications) {
+      user.notifications = {
+        ...user.notifications,
+        ...notifications,
+      };
+    }
+
+    await user.save();
+
+    const userResponse = user.toObject();
+    delete userResponse.password;
+
+    res.json(userResponse);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;

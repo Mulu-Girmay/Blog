@@ -80,14 +80,8 @@ export default function AdminPage() {
   if (!user) return <Navigate to="/login" />;
 
   if (user.role !== "admin" && user.role !== "author") {
-    return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-serif">Access Denied</h2>
-        <p className="text-ink/60">
-          You don't have permission to access this page.
-        </p>
-      </div>
-    );
+    toast.error("You do not have permission to access the admin panel.");
+    return <Navigate to="/" />;
   }
 
   // Build tabs based on user role
@@ -104,6 +98,10 @@ export default function AdminPage() {
       icon: <FaUsers />,
       path: "/admin/users",
     });
+  }
+  if (user.role === "guest") {
+    toast.error("You do not have permission to access the admin panel.");
+    return <Navigate to="/" />;
   }
 
   // Questions tab for admin and authors

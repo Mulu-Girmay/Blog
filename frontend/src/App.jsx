@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/layout/Layout";
@@ -10,6 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import AskPage from "./pages/AskPage";
 import AboutPage from "./pages/AboutPage";
 import ArticlesPage from "./pages/ArticlesPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -17,17 +18,15 @@ function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/home" element={<HomePage />} />
           <Route path="/post/:slug" element={<PostPage />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/write" element={<AdminPage />} />{" "}
-          {/* ✅ Add this */}
-          <Route path="/admin/edit/:id" element={<AdminPage />} />{" "}
-          {/* ✅ Add this */}
+          <Route path="/admin/write" element={<AdminPage />} />
+          <Route path="/admin/edit/:id" element={<AdminPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/ask" element={<AskPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/articles" element={<ArticlesPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </Layout>
       <Toaster

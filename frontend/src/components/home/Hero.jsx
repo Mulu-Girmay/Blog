@@ -40,8 +40,8 @@ export default function Hero() {
               <div className="w-24 h-24 mx-auto rounded-full bg-burgundy/10 flex items-center justify-center text-4xl mb-4">
                 ⚖️
               </div>
-              <h3 className="font-serif text-xl font-bold">Your Name</h3>
-              <p className="text-sm text-ink/60">Advocate | Legal Educator</p>
+              <h3 className="font-serif text-xl font-bold">Kalayu Hagose</h3>
+              <p className="text-sm text-ink/60">Legal Advocate </p>
               <div className="divider-ampersand my-4">&amp;</div>
               <p className="text-sm text-ink/70 italic">
                 "Demystifying the law, one article at a time."

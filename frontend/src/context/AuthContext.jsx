@@ -34,23 +34,30 @@ export function AuthProvider({ children }) {
     try {
       const res = await api.post("/auth/login", { username, password });
       const { token, user } = res.data;
+
       localStorage.setItem("token", token);
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
 
-      // ✅ Custom welcome message based on role
+      // ✅ Debug: Log the user role
+      console.log("✅ Logged in user:", user);
+      console.log("✅ User role:", user.role);
+
+      // Custom welcome message based on role
       if (user.role === "guest") {
         toast.success(`Welcome ${user.username}! 📖`);
       } else if (user.role === "author") {
         toast.success(`Welcome back, ${user.username}! ✍️`);
-      } else {
+      } else if (user.role === "admin") {
         toast.success(`Welcome back, ${user.username}! ⚖️`);
+      } else {
+        toast.success(`Welcome ${user.username}!`);
       }
 
       return { success: true, user };
     } catch (err) {
       toast.error(err.response?.data?.error || "Login failed");
-      return { success: false };
+      return { success: false, user: null };
     }
   };
 

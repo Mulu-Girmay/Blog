@@ -1,14 +1,26 @@
-import React, { useState } from "react";
-import { useNavigate, Navigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, Navigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FaUser, FaLock, FaArrowRight, FaUserPlus } from "react-icons/fa";
+import {
+  FaUser,
+  FaLock,
+  FaArrowRight,
+  FaUserPlus,
+  FaCheckCircle,
+} from "react-icons/fa";
 import toast from "react-hot-toast";
 import api from "../services/api";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
-  const [isRegister, setIsRegister] = useState(false);
+  const location = useLocation();
+
+  // Check if the URL has a register parameter
+  const isRegisterMode =
+    new URLSearchParams(location.search).get("register") === "true";
+
+  const [isRegister, setIsRegister] = useState(isRegisterMode);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -17,7 +29,16 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  if (user) return <Navigate to="/admin" />;
+  // If user is already logged in, redirect based on role
+  if (user) {
+    if (user.role === "guest") {
+      navigate("/");
+      return null;
+    } else {
+      navigate("/admin");
+      return null;
+    }
+  }
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,25 +51,29 @@ export default function LoginPage() {
     if (isRegister) {
       // ✅ PUBLIC REGISTRATION - ALWAYS CREATES GUEST
       try {
-        // ✅ IMPORTANT: We DON'T send role - backend defaults to 'guest'
         const res = await api.post("/auth/register", {
           username: formData.username,
           email: formData.email,
           password: formData.password,
           bio: formData.bio || "Reader",
-          // ❌ NO role field - backend will set as 'guest'
         });
 
-        // Auto-login after registration
+        toast.success("Account created successfully!");
+
+        // ✅ Auto-login after registration
         const loginResult = await login(formData.username, formData.password);
-        if (loginResult.success) {
-          // ✅ Check if user is guest and redirect appropriately
-          if (loginResult.user?.role === "guest") {
-            toast.success("Welcome! You can now read and comment on articles.");
-            navigate("/"); // Send to homepage, NOT admin
+
+        if (loginResult.success && loginResult.user) {
+          // ✅ Check role and redirect accordingly
+          if (loginResult.user.role === "guest") {
+            toast.success("Welcome! Explore articles and ask questions.");
+            navigate("/"); // ← Guests go to homepage
           } else {
-            navigate("/admin");
+            navigate("/admin"); // Admin/Author go to dashboard
           }
+        } else {
+          // If auto-login fails, redirect to login
+          navigate("/login");
         }
       } catch (err) {
         toast.error(err.response?.data?.error || "Registration failed");
@@ -56,9 +81,8 @@ export default function LoginPage() {
     } else {
       // Login
       const result = await login(formData.username, formData.password);
-      if (result.success) {
-        // ✅ Redirect based on role
-        if (result.user?.role === "guest") {
+      if (result.success && result.user) {
+        if (result.user.role === "guest") {
           navigate("/"); // Guests go to homepage
         } else {
           navigate("/admin"); // Admin/Author go to dashboard
@@ -149,15 +173,21 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* ✅ Show role info for guests */}
           {isRegister && (
-            <div className="text-xs text-ink/40 bg-cream p-3 rounded-lg">
-              <p>
-                📝 By registering, you'll have a <strong>guest</strong> account
-                with read-only access.
+            <div className="bg-cream p-3 rounded-lg text-xs text-ink/60 space-y-1">
+              <p className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500" /> You'll get a{" "}
+                <strong>guest</strong> account
               </p>
-              <p className="mt-1">
-                Authors and admins are created by the website administrator.
+              <p className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500" /> Ask legal questions
+              </p>
+              <p className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500" /> Comment on articles
+              </p>
+              <p className="flex items-center gap-2">
+                <FaCheckCircle className="text-green-500" /> Get email
+                notifications
               </p>
             </div>
           )}

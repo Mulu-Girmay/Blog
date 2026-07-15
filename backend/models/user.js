@@ -36,9 +36,24 @@ const UserSchema = new mongoose.Schema(
       linkedin: { type: String, default: "" },
       twitter: { type: String, default: "" },
     },
+    // ✅ NEW: Notification Preferences
+    notifications: {
+      newPost: {
+        type: Boolean,
+        default: true, // Opt-in by default
+      },
+      questionAnswered: {
+        type: Boolean,
+        default: true, // Opt-in by default
+      },
+      newsletter: {
+        type: Boolean,
+        default: true,
+      },
+    },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt automatically
+    timestamps: true,
   },
 );
 

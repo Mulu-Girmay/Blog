@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Question = require("../models/Question");
 const auth = require("../middleware/auth");
-
+const {
+  sendQuestionAnsweredNotification,
+} = require("../services/emailService");
 // ✅ PUBLIC: Submit a question
 router.post("/", async (req, res) => {
   try {
@@ -70,7 +72,7 @@ router.get("/:id", auth, async (req, res) => {
   }
 });
 
-// ✅ ADMIN: Answer a question
+// ✅ ADMIN: Answer a question (updated)
 router.put("/:id/answer", auth, async (req, res) => {
   try {
     if (req.user.role !== "admin" && req.user.role !== "author") {
@@ -97,8 +99,17 @@ router.put("/:id/answer", auth, async (req, res) => {
 
     await question.save();
 
+    // ✅ Send email notification to the user
+    try {
+      await sendQuestionAnsweredNotification(question, answer);
+      console.log("📧 Email notification sent to:", question.email);
+    } catch (emailErr) {
+      console.error("❌ Failed to send email:", emailErr.message);
+      // Don't fail the request if email fails
+    }
+
     res.json({
-      message: "✅ Question answered successfully!",
+      message: "✅ Question answered successfully! Email notification sent.",
       question,
     });
   } catch (err) {
@@ -149,5 +160,16 @@ router.delete("/:id", auth, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// ✅ GET current user's questions (authenticated)
+router.get("/user/my-questions", auth, async (req, res) => {
+  try {
+    const questions = await Question.find({
+      email: req.user.email, // Use email from the authenticated user
+    }).sort({ createdAt: -1 });
 
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
