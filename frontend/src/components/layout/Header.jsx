@@ -8,6 +8,7 @@ import {
   FaMoon,
   FaSun,
   FaPen,
+  FaQuestionCircle,
 } from "react-icons/fa";
 
 export default function Header() {
@@ -45,7 +46,7 @@ export default function Header() {
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8 font-serif">
             <Link
-              to="/"
+              to="/articles"
               className="text-ink/80 hover:text-burgundy transition-colors"
             >
               Articles
@@ -123,7 +124,16 @@ export default function Header() {
         {/* Mobile navigation */}
         <div className="flex md:hidden mt-3 space-x-6 text-sm">
           <Link to="/" className="text-ink/80 hover:text-burgundy">
+            Home
+          </Link>
+          <Link to="/articles" className="text-ink/80 hover:text-burgundy">
             Articles
+          </Link>
+          <Link
+            to="/ask"
+            className="text-ink/80 hover:text-burgundy flex items-center gap-1"
+          >
+            <FaQuestionCircle /> Ask
           </Link>
           <Link to="/about" className="text-ink/80 hover:text-burgundy">
             About

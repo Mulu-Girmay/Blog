@@ -7,6 +7,9 @@ import HomePage from "./pages/HomePage";
 import PostPage from "./pages/PostPage";
 import AdminPage from "./pages/AdminPage";
 import LoginPage from "./pages/LoginPage";
+import AskPage from "./pages/AskPage";
+import AboutPage from "./pages/AboutPage";
+import ArticlesPage from "./pages/ArticlesPage"; // ✅ Import this
 
 function App() {
   return (
@@ -17,6 +20,10 @@ function App() {
           <Route path="/post/:slug" element={<PostPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/ask" element={<AskPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/articles" element={<ArticlesPage />} />{" "}
+          {/* ✅ Add this */}
         </Routes>
       </Layout>
       <Toaster
