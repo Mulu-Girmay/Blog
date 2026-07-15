@@ -37,8 +37,17 @@ export function AuthProvider({ children }) {
       localStorage.setItem("token", token);
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
-      toast.success("Welcome back! ⚖️");
-      return { success: true };
+
+      // ✅ Custom welcome message based on role
+      if (user.role === "guest") {
+        toast.success(`Welcome ${user.username}! 📖`);
+      } else if (user.role === "author") {
+        toast.success(`Welcome back, ${user.username}! ✍️`);
+      } else {
+        toast.success(`Welcome back, ${user.username}! ⚖️`);
+      }
+
+      return { success: true, user };
     } catch (err) {
       toast.error(err.response?.data?.error || "Login failed");
       return { success: false };
@@ -52,8 +61,22 @@ export function AuthProvider({ children }) {
     toast.success("Logged out");
   };
 
+  const isAdmin = user?.role === "admin";
+  const isAuthor = user?.role === "author" || user?.role === "admin";
+  const isGuest = user?.role === "guest";
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        logout,
+        isAdmin,
+        isAuthor,
+        isGuest,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
