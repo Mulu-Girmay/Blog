@@ -1,14 +1,47 @@
+/* ✅ ALL @import statements MUST come FIRST */
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* 📰 Magazine Color Palette - v4 uses @theme */
+@theme {
+  /* Colors */
+  --color-paper: #fdf6e3;
+  --color-paper-dark: #f5ecd7;
+  --color-paper-light: #fffbf0;
+  --color-ink: #2c2c2c;
+  --color-ink-light: #4a4a4a;
+  --color-ink-lighter: #6b6b6b;
+  --color-burgundy: #8b3a3a;
+  --color-burgundy-light: #a05252;
+  --color-burgundy-dark: #6b2a2a;
+  --color-gold: #b8860b;
+  --color-gold-light: #d4a017;
+  --color-gold-dark: #8b6b00;
+  --color-cream: #fff8ee;
+  --color-navy: #1a2a3a;
+
+  /* Fonts */
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-body: Mercury, Georgia, serif;
+  --font-sans: Inter, sans-serif;
+
+  /* Shadows */
+  --shadow-magazine:
+    0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-magazine-hover:
+    0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
 
 /* 📰 Yellow Paper Base Styles */
 @layer base {
   body {
-    @apply bg-paper text-ink font-body antialiased;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-image:
       radial-gradient(
         ellipse at 50% 0%,
@@ -28,66 +61,218 @@
   h4,
   h5,
   h6 {
-    @apply font-serif;
+    font-family: var(--font-serif);
   }
+}
 
-  /* Subtle paper texture overlay */
-  .paper-texture {
-    position: relative;
-  }
+/* Subtle paper texture overlay */
+.paper-texture {
+  position: relative;
+}
 
-  .paper-texture::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-    pointer-events: none;
-    opacity: 0.2;
-    mix-blend-mode: multiply;
-  }
+.paper-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.2;
+  mix-blend-mode: multiply;
+}
 
-  /* Drop-cap styling */
-  .drop-cap::first-letter {
-    @apply float-left text-7xl font-serif font-bold leading-[0.8] mr-2 text-burgundy;
-    font-size: 4.5rem;
-    margin-top: 0.1em;
-  }
+/* Drop-cap styling */
+.drop-cap::first-letter {
+  float: left;
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 0.8;
+  margin-right: 0.5rem;
+  margin-top: 0.1em;
+  color: var(--color-burgundy);
+  font-family: var(--font-serif);
+}
 
-  /* Magazine article card */
-  .magazine-card {
-    @apply bg-cream rounded-lg shadow-magazine hover:shadow-magazine-hover transition-all duration-300;
-    border: 1px solid rgba(139, 58, 58, 0.06);
-    backdrop-filter: blur(2px);
-  }
+/* Magazine article card */
+.magazine-card {
+  background-color: var(--color-cream);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-magazine);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(139, 58, 58, 0.06);
+  backdrop-filter: blur(2px);
+}
 
-  /* Decorative divider with ampersand */
-  .divider-ampersand {
-    @apply flex items-center justify-center text-gold text-2xl font-serif italic;
-  }
-  .divider-ampersand::before,
-  .divider-ampersand::after {
-    content: "";
-    @apply flex-1 h-px bg-gold/30 mx-4;
-  }
+.magazine-card:hover {
+  box-shadow: var(--shadow-magazine-hover);
+}
 
-  /* Plain English toggle */
-  .toggle-switch {
-    @apply relative inline-flex items-center cursor-pointer;
+/* Decorative divider with ampersand */
+.divider-ampersand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gold);
+  font-size: 1.5rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+.divider-ampersand::before,
+.divider-ampersand::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--color-gold);
+  opacity: 0.3;
+  margin: 0 1rem;
+}
+
+/* Plain English toggle */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.toggle-slider {
+  width: 3.5rem;
+  height: 2rem;
+  background-color: rgba(44, 44, 44, 0.2);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.toggle-slider::after {
+  content: "";
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  background-color: white;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: var(--color-burgundy);
+}
+
+.toggle-switch input:checked + .toggle-slider::after {
+  transform: translateX(100%);
+}
+
+/* ✅ Utility classes for Tailwind v4 */
+@layer utilities {
+  .bg-paper {
+    background-color: var(--color-paper);
   }
-  .toggle-switch input {
-    @apply sr-only;
+  .bg-cream {
+    background-color: var(--color-cream);
   }
-  .toggle-slider {
-    @apply w-14 h-8 bg-ink/20 rounded-full transition-all duration-300;
+  .bg-burgundy {
+    background-color: var(--color-burgundy);
   }
-  .toggle-slider::after {
-    content: "";
-    @apply absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-all duration-300 shadow-md;
+  .bg-burgundy\/5 {
+    background-color: rgba(139, 58, 58, 0.05);
   }
-  .toggle-switch input:checked + .toggle-slider {
-    @apply bg-burgundy;
+  .bg-burgundy\/10 {
+    background-color: rgba(139, 58, 58, 0.1);
   }
-  .toggle-switch input:checked + .toggle-slider::after {
-    transform: translateX(100%);
+  .bg-burgundy\/20 {
+    background-color: rgba(139, 58, 58, 0.2);
+  }
+  .bg-burgundy\/30 {
+    background-color: rgba(139, 58, 58, 0.3);
+  }
+  .bg-ink\/20 {
+    background-color: rgba(44, 44, 44, 0.2);
+  }
+  .bg-ink\/5 {
+    background-color: rgba(44, 44, 44, 0.05);
+  }
+  .bg-white\/50 {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  .bg-white\/70 {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+  .bg-cream\/50 {
+    background-color: rgba(255, 248, 238, 0.5);
+  }
+  .text-ink {
+    color: var(--color-ink);
+  }
+  .text-ink\/20 {
+    color: rgba(44, 44, 44, 0.2);
+  }
+  .text-ink\/30 {
+    color: rgba(44, 44, 44, 0.3);
+  }
+  .text-ink\/40 {
+    color: rgba(44, 44, 44, 0.4);
+  }
+  .text-ink\/50 {
+    color: rgba(44, 44, 44, 0.5);
+  }
+  .text-ink\/60 {
+    color: rgba(44, 44, 44, 0.6);
+  }
+  .text-ink\/70 {
+    color: rgba(44, 44, 44, 0.7);
+  }
+  .text-ink\/80 {
+    color: rgba(44, 44, 44, 0.8);
+  }
+  .text-burgundy {
+    color: var(--color-burgundy);
+  }
+  .text-gold {
+    color: var(--color-gold);
+  }
+  .border-gold\/20 {
+    border-color: rgba(184, 134, 11, 0.2);
+  }
+  .border-burgundy\/10 {
+    border-color: rgba(139, 58, 58, 0.1);
+  }
+  .border-burgundy\/20 {
+    border-color: rgba(139, 58, 58, 0.2);
+  }
+  .border-burgundy\/30 {
+    border-color: rgba(139, 58, 58, 0.3);
+  }
+  .border-burgundy\/50 {
+    border-color: rgba(139, 58, 58, 0.5);
+  }
+  .shadow-magazine {
+    box-shadow: var(--shadow-magazine);
+  }
+  .shadow-magazine-hover {
+    box-shadow: var(--shadow-magazine-hover);
+  }
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  .font-body {
+    font-family: var(--font-body);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
   }
 }
