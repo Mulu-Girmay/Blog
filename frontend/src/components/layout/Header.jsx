@@ -46,6 +46,12 @@ export default function Header() {
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8 font-serif">
             <Link
+              to="/home"
+              className="text-ink/80 hover:text-burgundy transition-colors"
+            >
+              Home
+            </Link>
+            <Link
               to="/articles"
               className="text-ink/80 hover:text-burgundy transition-colors"
             >

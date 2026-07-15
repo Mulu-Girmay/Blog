@@ -1,23 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import PostEditor from "../components/admin/PostEditor";
 import PostManager from "../components/admin/PostManager";
 import UserManager from "../components/admin/UserManager";
-import { FaEdit, FaList, FaUsers, FaKey } from "react-icons/fa";
+import QuestionManager from "../components/admin/QuestionManager";
+import {
+  FaEdit,
+  FaList,
+  FaUsers,
+  FaKey,
+  FaQuestionCircle,
+} from "react-icons/fa";
 import toast from "react-hot-toast";
 import api from "../services/api";
 
 export default function AdminPage() {
   const { user, loading } = useAuth();
-  const [activeTab, setActiveTab] = useState("manage");
-  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const location = useLocation();
+
+  // Password change state
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [changingPassword, setChangingPassword] = useState(false);
+
+  // Determine active tab from URL
+  const getTabFromPath = () => {
+    const path = location.pathname;
+    if (path.includes("/write")) return "write";
+    if (path.includes("/edit")) return "write";
+    if (path.includes("/users")) return "users";
+    if (path.includes("/questions")) return "questions";
+    if (path.includes("/password")) return "password";
+    return "manage";
+  };
+
+  const [activeTab, setActiveTab] = useState(getTabFromPath);
+
+  // Update tab when URL changes
+  useEffect(() => {
+    setActiveTab(getTabFromPath());
+  }, [location.pathname]);
+
+  // Handle password change
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await api.put("/auth/change-password", {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      toast.success("Password changed successfully!");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to change password");
+    } finally {
+      setChangingPassword(false);
+    }
+  };
 
   if (loading) return <div className="p-20 text-center">Loading...</div>;
   if (!user) return <Navigate to="/login" />;
@@ -33,53 +90,43 @@ export default function AdminPage() {
     );
   }
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-    if (passwordData.newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-
-    setChangingPassword(true);
-    try {
-      // Add this endpoint to your backend
-      await api.put("/auth/change-password", {
-        currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword,
-      });
-      toast.success("Password changed successfully!");
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-      setShowPasswordChange(false);
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to change password");
-    } finally {
-      setChangingPassword(false);
-    }
-  };
-
+  // Build tabs based on user role
   const tabs = [
-    { id: "manage", label: "Manage Posts", icon: <FaList /> },
-    { id: "write", label: "Write New", icon: <FaEdit /> },
+    { id: "manage", label: "Manage Posts", icon: <FaList />, path: "/admin" },
+    { id: "write", label: "Write New", icon: <FaEdit />, path: "/admin/write" },
   ];
 
+  // Only show user management for admins
   if (user.role === "admin") {
-    tabs.push({ id: "users", label: "User Management", icon: <FaUsers /> });
+    tabs.push({
+      id: "users",
+      label: "User Management",
+      icon: <FaUsers />,
+      path: "/admin/users",
+    });
   }
 
-  // Add password change tab for all users
-  tabs.push({ id: "password", label: "Change Password", icon: <FaKey /> });
+  // Questions tab for admin and authors
+  tabs.push({
+    id: "questions",
+    label: "Questions",
+    icon: <FaQuestionCircle />,
+    path: "/admin/questions",
+  });
+  tabs.push({
+    id: "password",
+    label: "Change Password",
+    icon: <FaKey />,
+    path: "/admin/password",
+  });
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex justify-between items-center flex-wrap gap-4">
         <div>
           <h1 className="text-3xl font-serif font-bold">📝 Admin Dashboard</h1>
           <p className="text-ink/60">
@@ -95,11 +142,12 @@ export default function AdminPage() {
         )}
       </div>
 
+      {/* Tabs */}
       <div className="flex space-x-4 border-b border-gold/20 mb-6 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabChange(tab.id)}
             className={`px-4 py-2 font-serif text-sm transition-colors whitespace-nowrap ${
               activeTab === tab.id
                 ? "text-burgundy border-b-2 border-burgundy"
@@ -111,10 +159,12 @@ export default function AdminPage() {
         ))}
       </div>
 
+      {/* Tab Content */}
       <div>
         {activeTab === "manage" && <PostManager />}
         {activeTab === "write" && <PostEditor />}
         {activeTab === "users" && user.role === "admin" && <UserManager />}
+        {activeTab === "questions" && <QuestionManager />}
         {activeTab === "password" && (
           <div className="max-w-md">
             <h2 className="text-xl font-serif mb-4">🔑 Change Password</h2>
