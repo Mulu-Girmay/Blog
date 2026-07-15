@@ -22,7 +22,7 @@ mongoose
 app.use("/api/posts", require("./routes/posts"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/upload", require("./routes/upload"));
-
+app.use("/api/users", require("./routes/users"));
 app.get("/", (req, res) => {
   res.json({ message: "⚖️ Law Blog API is running!" });
 });
