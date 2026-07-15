@@ -6,6 +6,7 @@ import api from "../services/api";
 import DropCap from "../components/common/DropCap";
 import PlainEnglishToggle from "../components/common/PlainEnglishToggle";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import CommentSection from "../components/common/CommentSection";
 
 export default function PostPage() {
   const { slug } = useParams();
@@ -78,6 +79,7 @@ export default function PostPage() {
           >
             <FaPrint /> Print
           </button>
+          <CommentSection postId={post._id} />
         </div>
       </header>
 

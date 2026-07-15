@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { FaUser, FaClock } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaUser, FaClock, FaTrash } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 
-export default function CommentSection({ postId, postSlug }) {
+export default function CommentSection({ postId }) {
   const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
@@ -13,7 +14,9 @@ export default function CommentSection({ postId, postSlug }) {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchComments();
+    if (postId) {
+      fetchComments();
+    }
   }, [postId]);
 
   const fetchComments = async () => {
@@ -54,11 +57,24 @@ export default function CommentSection({ postId, postSlug }) {
     }
   };
 
+  const handleDelete = async (commentId) => {
+    if (!confirm("Delete this comment?")) return;
+    try {
+      await api.delete(`/comments/${commentId}`);
+      setComments(comments.filter((c) => c._id !== commentId));
+      toast.success("Comment deleted");
+    } catch (err) {
+      toast.error("Failed to delete comment");
+    }
+  };
+
   if (loading)
-    return <div className="text-center py-4">Loading comments...</div>;
+    return (
+      <div className="text-center py-4 text-ink/40">Loading comments...</div>
+    );
 
   return (
-    <div className="mt-12">
+    <div className="mt-12 border-t border-gold/20 pt-8">
       <h3 className="text-2xl font-serif font-bold mb-6">
         💬 Comments ({comments.length})
       </h3>
@@ -82,12 +98,16 @@ export default function CommentSection({ postId, postSlug }) {
           </button>
         </form>
       ) : (
-        <div className="bg-cream p-4 rounded-lg mb-8 text-center text-ink/60">
-          <p>
+        <div className="bg-cream p-4 rounded-lg mb-8 text-center">
+          <p className="text-ink/60">
             Please{" "}
-            <a href="/login" className="text-burgundy hover:underline">
+            <Link to="/login" className="text-burgundy hover:underline">
               login
-            </a>{" "}
+            </Link>{" "}
+            or{" "}
+            <Link to="/login" className="text-burgundy hover:underline">
+              register
+            </Link>{" "}
             to comment
           </p>
         </div>
@@ -105,18 +125,30 @@ export default function CommentSection({ postId, postSlug }) {
               key={comment._id}
               className="border-l-4 border-gold/30 pl-4 py-2"
             >
-              <div className="flex items-center gap-2 text-sm text-ink/50">
-                <FaUser className="text-xs" />
-                <span className="font-serif font-semibold">
-                  {comment.author?.username || "Anonymous"}
-                </span>
-                <span>•</span>
-                <span className="flex items-center gap-1">
-                  <FaClock className="text-[10px]" />
-                  {formatDistanceToNow(new Date(comment.createdAt), {
-                    addSuffix: true,
-                  })}
-                </span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-ink/50">
+                  <FaUser className="text-xs" />
+                  <span className="font-serif font-semibold">
+                    {comment.author?.username || "Anonymous"}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <FaClock className="text-[10px]" />
+                    {formatDistanceToNow(new Date(comment.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                </div>
+                {/* Delete button - only for admin or comment author */}
+                {(user?.role === "admin" ||
+                  user?._id === comment.author?._id) && (
+                  <button
+                    onClick={() => handleDelete(comment._id)}
+                    className="text-ink/30 hover:text-red-500 transition-colors"
+                  >
+                    <FaTrash className="text-xs" />
+                  </button>
+                )}
               </div>
               <p className="mt-1 text-ink/80">{comment.content}</p>
             </div>

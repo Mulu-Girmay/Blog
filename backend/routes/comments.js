@@ -20,10 +20,10 @@ router.get("/post/:postId", async (req, res) => {
   }
 });
 
-// POST a comment (authenticated)
+// POST a comment (authenticated only)
 router.post("/", auth, async (req, res) => {
   try {
-    const { postId, content } = req.body;
+    const { postId, content, parentCommentId } = req.body;
 
     if (!content || !postId) {
       return res
@@ -35,6 +35,7 @@ router.post("/", auth, async (req, res) => {
       postId,
       author: req.user.id,
       content,
+      parentCommentId: parentCommentId || null,
     });
 
     await comment.save();
