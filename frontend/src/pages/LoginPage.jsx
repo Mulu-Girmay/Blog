@@ -229,12 +229,12 @@ export default function LoginPage() {
           )}
         </button>
 
-        {!isRegister && (
+        {/* {!isRegister && (
           <p className="text-center text-xs text-ink/40 mt-4">
             Demo: username: <strong>admin</strong> | password:{" "}
             <strong>admin123</strong>
           </p>
-        )}
+        )} */}
       </div>
     </div>
   );
