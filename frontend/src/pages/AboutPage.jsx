@@ -49,7 +49,7 @@ export default function AboutPage() {
 
             {/* Author Info */}
             <div>
-              <h2 className="text-2xl font-serif font-bold">Your Name</h2>
+              <h2 className="text-2xl font-serif font-bold">kalayu</h2>
               <p className="text-burgundy font-serif">
                 Advocate &amp; Legal Educator
               </p>
@@ -59,7 +59,7 @@ export default function AboutPage() {
                   <FaGraduationCap /> LL.B, LL.M
                 </span>
                 <span className="flex items-center gap-1">
-                  <FaBriefcase /> 10+ Years Experience
+                  <FaBriefcase /> 5+ Years Experience
                 </span>
                 <span className="flex items-center gap-1">
                   <FaAward /> Bar Council Certified
