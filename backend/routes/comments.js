@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Comment = require("../models/Comment");
 const auth = require("../middleware/auth");
+const User = require("../models/User");
 
 // GET comments for a post
 router.get("/post/:postId", async (req, res) => {

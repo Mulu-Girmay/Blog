@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Question = require("../models/Question");
 const auth = require("../middleware/auth");
+const User = require("../models/User");
+
 const {
   sendQuestionAnsweredNotification,
 } = require("../services/emailService");
