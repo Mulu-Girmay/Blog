@@ -4,10 +4,12 @@ import MDEditor from "@uiw/react-md-editor";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { FaSave, FaTimes } from "react-icons/fa";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function PostEditor() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { darkMode } = useDarkMode();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -97,21 +99,25 @@ export default function PostEditor() {
     <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
       {/* Title */}
       <div>
-        <label className="block font-serif font-semibold mb-2">Title *</label>
+        <label className="block font-serif font-semibold mb-2 text-ink">
+          Title <span className="text-burgundy">*</span>
+        </label>
         <input
           type="text"
           name="title"
           value={formData.title}
           onChange={handleChange}
           required
-          className="w-full px-4 py-3 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-lg"
+          className="w-full px-4 py-3 bg-white/70 dark:bg-ink/10 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-ink"
           placeholder="Your article title..."
         />
       </div>
 
       {/* Excerpt */}
       <div>
-        <label className="block font-serif font-semibold mb-2">Excerpt *</label>
+        <label className="block font-serif font-semibold mb-2 text-ink">
+          Excerpt <span className="text-burgundy">*</span>
+        </label>
         <textarea
           name="excerpt"
           value={formData.excerpt}
@@ -119,7 +125,7 @@ export default function PostEditor() {
           required
           maxLength="200"
           rows="2"
-          className="w-full px-4 py-3 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50"
+          className="w-full px-4 py-3 bg-white/70 dark:bg-ink/10 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-ink"
           placeholder="A short summary (max 200 characters)..."
         />
         <p className="text-xs text-ink/40 mt-1">
@@ -127,36 +133,46 @@ export default function PostEditor() {
         </p>
       </div>
 
-      {/* Main Content */}
+      {/* Main Content - FIXED */}
       <div>
-        <label className="block font-serif font-semibold mb-2">
-          Content * (Markdown)
+        <label className="block font-serif font-semibold mb-2 text-ink">
+          Content <span className="text-burgundy">*</span> (Markdown)
         </label>
-        <div className="bg-white/70 rounded-lg overflow-hidden border border-gold/20">
+        <div className="border border-gold/20 rounded-lg overflow-hidden">
           <MDEditor
             value={formData.content}
             onChange={handleContentChange}
             height={400}
             preview="edit"
+            className={!darkMode ? "light-mode-editor" : ""}
+            style={{
+              backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
+              color: darkMode ? "#e8e8e8" : "#2C2C2C",
+            }}
           />
         </div>
       </div>
 
-      {/* Plain English Version */}
+      {/* Plain English Version - FIXED */}
       <div>
-        <label className="block font-serif font-semibold mb-2">
+        <label className="block font-serif font-semibold mb-2 text-ink">
           ✨ Plain English Version (Optional)
         </label>
         <p className="text-sm text-ink/60 mb-2">
           Simplify your article for non-lawyers. If filled, readers can toggle
           between versions.
         </p>
-        <div className="bg-white/70 rounded-lg overflow-hidden border border-gold/20">
+        <div className="border border-gold/20 rounded-lg overflow-hidden">
           <MDEditor
             value={formData.plainEnglish}
             onChange={handlePlainEnglishChange}
             height={200}
             preview="edit"
+            className={!darkMode ? "light-mode-editor" : ""}
+            style={{
+              backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
+              color: darkMode ? "#e8e8e8" : "#2C2C2C",
+            }}
           />
         </div>
       </div>
@@ -164,7 +180,7 @@ export default function PostEditor() {
       {/* Meta fields */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block font-serif font-semibold mb-2">
+          <label className="block font-serif font-semibold mb-2 text-ink">
             Category
           </label>
           <input
@@ -172,12 +188,12 @@ export default function PostEditor() {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-full px-4 py-2 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50"
+            className="w-full px-4 py-2 bg-white/70 dark:bg-ink/10 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-ink"
             placeholder="General Legal Articles"
           />
         </div>
         <div>
-          <label className="block font-serif font-semibold mb-2">
+          <label className="block font-serif font-semibold mb-2 text-ink">
             Tags (comma separated)
           </label>
           <input
@@ -185,7 +201,7 @@ export default function PostEditor() {
             name="tags"
             value={formData.tags}
             onChange={handleChange}
-            className="w-full px-4 py-2 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50"
+            className="w-full px-4 py-2 bg-white/70 dark:bg-ink/10 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-ink"
             placeholder="constitutional, rights, police"
           />
         </div>
@@ -201,7 +217,7 @@ export default function PostEditor() {
           id="featured"
           className="w-4 h-4 accent-burgundy"
         />
-        <label htmlFor="featured" className="font-serif">
+        <label htmlFor="featured" className="font-serif text-ink">
           ⭐ Feature this article on homepage
         </label>
       </div>
@@ -219,7 +235,7 @@ export default function PostEditor() {
         <button
           type="button"
           onClick={() => navigate("/admin")}
-          className="border border-ink/20 px-6 py-3 rounded-lg font-serif hover:bg-ink/5 transition-colors flex items-center gap-2"
+          className="border border-ink/20 text-ink px-6 py-3 rounded-lg font-serif hover:bg-ink/5 transition-colors flex items-center gap-2"
         >
           <FaTimes /> Cancel
         </button>
