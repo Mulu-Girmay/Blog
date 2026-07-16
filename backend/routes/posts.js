@@ -4,7 +4,7 @@ const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const slugify = require("slugify");
 const { sendNewPostNotification } = require("../services/emailService");
-const User = require("../models/User");
+const User = require("../models/user");
 
 // GET all posts (public)
 router.get("/", async (req, res) => {
