@@ -56,6 +56,19 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// ✅ GET current user's questions (authenticated)
+router.get("/user/my-questions", auth, async (req, res) => {
+  try {
+    const questions = await Question.find({
+      email: req.user.email,
+    }).sort({ createdAt: -1 });
+
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // ✅ ADMIN: Get single question
 router.get("/:id", auth, async (req, res) => {
   try {
@@ -158,18 +171,6 @@ router.delete("/:id", auth, async (req, res) => {
     }
 
     res.json({ message: "Question deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-// ✅ GET current user's questions (authenticated)
-router.get("/user/my-questions", auth, async (req, res) => {
-  try {
-    const questions = await Question.find({
-      email: req.user.email, // Use email from the authenticated user
-    }).sort({ createdAt: -1 });
-
-    res.json(questions);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
