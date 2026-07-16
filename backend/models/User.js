@@ -36,15 +36,14 @@ const UserSchema = new mongoose.Schema(
       linkedin: { type: String, default: "" },
       twitter: { type: String, default: "" },
     },
-    // ✅ NEW: Notification Preferences
     notifications: {
       newPost: {
         type: Boolean,
-        default: true, // Opt-in by default
+        default: true,
       },
       questionAnswered: {
         type: Boolean,
-        default: true, // Opt-in by default
+        default: true,
       },
       newsletter: {
         type: Boolean,
@@ -57,14 +56,12 @@ const UserSchema = new mongoose.Schema(
   },
 );
 
-// Hash password before saving
 UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Compare password method
 UserSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
