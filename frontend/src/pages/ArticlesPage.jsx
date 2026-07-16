@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { FaClock, FaSearch, FaTag } from "react-icons/fa";
+import {
+  FaClock,
+  FaTag,
+  FaUser,
+  FaArrowLeft,
+  FaArrowRight,
+} from "react-icons/fa";
 import api from "../services/api";
 import LoadingSpinner from "../components/common/LoadingSpinner";
+import { formatDistanceToNow } from "date-fns";
 
 export default function ArticlesPage() {
   const [posts, setPosts] = useState([]);
@@ -28,6 +35,7 @@ export default function ArticlesPage() {
       params.append("limit", postsPerPage);
       params.append("page", currentPage);
       if (categoryFilter) params.append("category", categoryFilter);
+      if (searchQuery) params.append("search", searchQuery);
 
       const res = await api.get(`/posts?${params.toString()}`);
       setPosts(res.data.posts);
@@ -52,17 +60,6 @@ export default function ArticlesPage() {
     }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const query = formData.get("search");
-    if (query.trim()) {
-      setSearchParams({ search: query.trim(), page: 1 });
-    } else {
-      setSearchParams({});
-    }
-  };
-
   const handleCategoryClick = (category) => {
     if (category === categoryFilter) {
       setSearchParams({});
@@ -76,61 +73,50 @@ export default function ArticlesPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12 max-w-6xl">
       {/* Header */}
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-serif font-bold">📚 All Articles</h1>
+        <h1 className="text-4xl font-serif font-bold text-ink">
+          📚 All Articles
+        </h1>
         <p className="text-ink/60 mt-2">
           {totalPosts} {totalPosts === 1 ? "article" : "articles"} published
         </p>
-        <div className="divider-ampersand mt-4">&amp;</div>
-      </div>
-
-      {/* Search & Filter */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <form onSubmit={handleSearch} className="flex-1 flex gap-2">
-          <input
-            type="text"
-            name="search"
-            defaultValue={searchQuery}
-            placeholder="Search articles..."
-            className="flex-1 px-4 py-2 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50"
-          />
-          <button
-            type="submit"
-            className="bg-burgundy text-white px-6 py-2 rounded-lg hover:bg-burgundy/90 transition-colors flex items-center gap-2"
-          >
-            <FaSearch /> Search
-          </button>
-        </form>
         {searchQuery && (
-          <button
-            onClick={() => setSearchParams({})}
-            className="text-sm text-ink/40 hover:text-burgundy transition-colors"
-          >
-            Clear search
-          </button>
+          <div className="mt-3 inline-flex items-center gap-3 bg-burgundy/5 px-4 py-2 rounded-full">
+            <span className="text-sm text-ink/60">Showing results for:</span>
+            <span className="font-serif font-semibold text-burgundy">
+              "{searchQuery}"
+            </span>
+            <button
+              onClick={() => setSearchParams({})}
+              className="text-sm text-ink/40 hover:text-burgundy transition-colors"
+            >
+              ✕ Clear
+            </button>
+          </div>
         )}
+        <div className="divider-ampersand mt-6">&amp;</div>
       </div>
 
       {/* Category Filter */}
       {categories.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap gap-2 mb-8 justify-center">
           <button
             onClick={() => setSearchParams({})}
-            className={`px-3 py-1 rounded-full text-sm transition-colors ${
-              !categoryFilter
+            className={`px-4 py-2 rounded-full text-sm transition-colors ${
+              !categoryFilter && !searchQuery
                 ? "bg-burgundy text-white"
                 : "bg-ink/5 hover:bg-ink/10 text-ink/70"
             }`}
           >
-            All
+            All Articles
           </button>
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => handleCategoryClick(cat)}
-              className={`px-3 py-1 rounded-full text-sm transition-colors flex items-center gap-1 ${
+              className={`px-4 py-2 rounded-full text-sm transition-colors flex items-center gap-1 ${
                 categoryFilter === cat
                   ? "bg-burgundy text-white"
                   : "bg-ink/5 hover:bg-ink/10 text-ink/70"
@@ -144,19 +130,18 @@ export default function ArticlesPage() {
 
       {/* Results count */}
       {searchQuery && (
-        <p className="text-sm text-ink/50 mb-4">
-          Showing results for:{" "}
-          <span className="font-serif font-semibold text-ink">
-            "{searchQuery}"
-          </span>
+        <p className="text-sm text-ink/50 mb-6 text-center">
+          Found{" "}
+          <span className="font-serif font-bold text-ink">{totalPosts}</span>{" "}
+          results
         </p>
       )}
 
       {/* Articles Grid */}
       {posts.length === 0 ? (
         <div className="text-center py-16">
-          <div className="text-6xl mb-4">📭</div>
-          <h3 className="text-xl font-serif font-semibold mb-2">
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-serif font-semibold mb-2 text-ink">
             No articles found
           </h3>
           <p className="text-ink/60">
@@ -185,20 +170,21 @@ export default function ArticlesPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-10">
+            <div className="flex justify-center items-center gap-4 mt-12">
               <button
                 onClick={() =>
                   setSearchParams({
                     page: currentPage - 1,
                     ...(categoryFilter && { category: categoryFilter }),
+                    ...(searchQuery && { search: searchQuery }),
                   })
                 }
                 disabled={currentPage === 1}
-                className="px-4 py-2 border border-gold/20 rounded-lg hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-4 py-2 border border-gold/20 rounded-lg hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink flex items-center gap-1"
               >
-                Previous
+                <FaArrowLeft className="text-xs" /> Previous
               </button>
-              <span className="px-4 py-2 text-ink/60">
+              <span className="text-sm text-ink/60">
                 Page {currentPage} of {totalPages}
               </span>
               <button
@@ -206,12 +192,13 @@ export default function ArticlesPage() {
                   setSearchParams({
                     page: currentPage + 1,
                     ...(categoryFilter && { category: categoryFilter }),
+                    ...(searchQuery && { search: searchQuery }),
                   })
                 }
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 border border-gold/20 rounded-lg hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="px-4 py-2 border border-gold/20 rounded-lg hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink flex items-center gap-1"
               >
-                Next
+                Next <FaArrowRight className="text-xs" />
               </button>
             </div>
           )}
@@ -224,39 +211,38 @@ export default function ArticlesPage() {
 // Article Card Component
 function ArticleCard({ post }) {
   return (
-    <article className="magazine-card p-5 hover:translate-y-[-4px] transition-all duration-300">
+    <article className="group bg-white/50 dark:bg-ink/5 rounded-lg overflow-hidden border border-gold/10 hover:border-burgundy/20 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
       {post.image && (
         <div
-          className="mb-4 rounded-md overflow-hidden h-48 bg-cover bg-center"
+          className="h-48 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
           style={{ backgroundImage: `url(${post.image})` }}
         />
       )}
-      <div className="flex items-center gap-2 text-xs text-ink/50 mb-2">
-        <span className="px-2 py-1 bg-burgundy/5 text-burgundy rounded-full">
-          {post.category || "General"}
-        </span>
-        <span>•</span>
-        <span className="flex items-center gap-1">
-          <FaClock className="text-[10px]" /> {post.readTime || 3} min
-        </span>
-      </div>
-      <Link to={`/post/${post.slug}`}>
-        <h3 className="font-serif text-xl font-bold leading-tight mb-2 hover:text-burgundy transition-colors line-clamp-2">
-          {post.title}
-        </h3>
-      </Link>
-      <p className="text-sm text-ink/70 line-clamp-2 mb-3">{post.excerpt}</p>
-      <div className="flex items-center justify-between text-sm">
-        <span className="font-serif text-sm">
-          {post.author?.name || "Unknown"}
-        </span>
-        <span className="text-xs text-ink/40">
-          {new Date(post.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
+      <div className="p-5">
+        <div className="flex items-center gap-2 text-xs text-ink/50 mb-2">
+          <span className="px-2 py-1 bg-burgundy/5 text-burgundy rounded-full flex items-center gap-1">
+            <FaTag className="text-[10px]" /> {post.category || "General"}
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1">
+            <FaClock className="text-[10px]" /> {post.readTime || 3} min
+          </span>
+        </div>
+        <Link to={`/post/${post.slug}`}>
+          <h3 className="font-serif text-xl font-bold leading-tight mb-2 group-hover:text-burgundy transition-colors line-clamp-2 text-ink">
+            {post.title}
+          </h3>
+        </Link>
+        <p className="text-sm text-ink/70 line-clamp-2 mb-3">{post.excerpt}</p>
+        <div className="flex items-center justify-between text-sm border-t border-gold/10 pt-3">
+          <span className="font-serif text-xs text-ink/60 flex items-center gap-1">
+            <FaUser className="text-[10px]" />{" "}
+            {post.author?.name || "Kalayus Blog"}
+          </span>
+          <span className="text-xs text-ink/40">
+            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+          </span>
+        </div>
       </div>
     </article>
   );

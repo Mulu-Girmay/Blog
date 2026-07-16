@@ -21,10 +21,13 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
 
+  // ✅ FIXED: Search handler
   const handleSearch = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/articles?search=${searchQuery}`);
+    const query = searchQuery.trim();
+    if (query) {
+      navigate(`/articles?search=${encodeURIComponent(query)}`);
+      setSearchQuery(""); // Clear after search
     }
   };
 
@@ -67,14 +70,12 @@ export default function Header() {
             >
               Articles
             </Link>
-            {(!user || user.role !== "admin") && (
-              <Link
-                to="/ask"
-                className="text-ink/80 hover:text-burgundy transition-colors flex items-center gap-1"
-              >
-                <FaQuestionCircle /> Ask
-              </Link>
-            )}
+            <Link
+              to="/ask"
+              className="text-ink/80 hover:text-burgundy transition-colors text-sm flex items-center gap-1"
+            >
+              <FaQuestionCircle /> Ask
+            </Link>
             <Link
               to="/about"
               className="text-ink/80 hover:text-burgundy transition-colors text-sm"
@@ -93,17 +94,17 @@ export default function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-2 md:space-x-4">
-            {/* Search */}
+            {/* ✅ FIXED: Search form */}
             <form
               onSubmit={handleSearch}
               className="hidden md:flex items-center"
             >
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-3 py-1.5 text-sm focus:outline-none focus:border-burgundy/50 transition-colors w-32 lg:w-48 text-ink"
+                className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-3 py-1.5 text-sm focus:outline-none focus:border-burgundy/50 transition-colors w-32 lg:w-48 text-ink placeholder:text-ink/40"
               />
               <button
                 type="submit"
@@ -113,7 +114,7 @@ export default function Header() {
               </button>
             </form>
 
-            {/* Dark mode toggle - NOW FUNCTIONAL */}
+            {/* Dark mode toggle */}
             <button
               onClick={toggleDarkMode}
               className="text-ink/60 hover:text-burgundy transition-colors p-2 rounded-full hover:bg-burgundy/10"
@@ -217,16 +218,19 @@ export default function Header() {
               <FaPen className="inline mr-1" /> Write
             </Link>
           )}
-          {/* Mobile search */}
+          {/* ✅ FIXED: Mobile search */}
           <form onSubmit={handleSearch} className="flex items-center ml-auto">
             <input
               type="text"
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-2 py-0.5 text-sm w-24 focus:outline-none focus:border-burgundy/50 text-ink"
+              className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-2 py-0.5 text-sm w-24 focus:outline-none focus:border-burgundy/50 text-ink placeholder:text-ink/40"
             />
-            <button type="submit" className="ml-1 text-ink/60">
+            <button
+              type="submit"
+              className="ml-1 text-ink/60 hover:text-burgundy"
+            >
               <FaSearch className="text-xs" />
             </button>
           </form>

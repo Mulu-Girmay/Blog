@@ -71,10 +71,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Magazine Grid - 3 Columns */}
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Main content - 3 column grid */}
           <div className="lg:w-3/4">
             <div className="divider-ampersand my-8">Recent Articles</div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -82,11 +80,6 @@ export default function HomePage() {
                 <PostCard key={post._id} post={post} />
               ))}
             </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:w-1/4">
-            <CategorySidebar />
           </div>
         </div>
       </div>

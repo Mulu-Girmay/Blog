@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import MDEditor from "@uiw/react-md-editor";
 import api from "../../services/api";
 import toast from "react-hot-toast";
-import { FaSave, FaTimes } from "react-icons/fa";
+import { FaSave, FaTimes, FaUpload, FaSpinner } from "react-icons/fa";
 import { useDarkMode } from "../../context/DarkModeContext";
 
 export default function PostEditor() {
@@ -12,6 +12,8 @@ export default function PostEditor() {
   const { darkMode } = useDarkMode();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     title: "",
     excerpt: "",
@@ -20,6 +22,7 @@ export default function PostEditor() {
     tags: "",
     featured: false,
     plainEnglish: "",
+    image: "",
   });
 
   useEffect(() => {
@@ -41,6 +44,7 @@ export default function PostEditor() {
         tags: post.tags?.join(", ") || "",
         featured: post.featured,
         plainEnglish: post.plainEnglish || "",
+        image: post.image || "",
       });
     } catch (err) {
       toast.error("Failed to load post");
@@ -63,6 +67,40 @@ export default function PostEditor() {
 
   const handlePlainEnglishChange = (value) => {
     setFormData((prev) => ({ ...prev, plainEnglish: value || "" }));
+  };
+
+  // ✅ Image Upload Handler
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    const formDataObj = new FormData();
+    formDataObj.append("image", file);
+
+    setUploading(true);
+    try {
+      const res = await api.post("/upload", formDataObj, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setFormData((prev) => ({ ...prev, image: res.data.url }));
+      toast.success("Image uploaded successfully!");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -133,7 +171,63 @@ export default function PostEditor() {
         </p>
       </div>
 
-      {/* Main Content - FIXED */}
+      {/* ✅ Image Upload */}
+      <div>
+        <label className="block font-serif font-semibold mb-2 text-ink">
+          Feature Image
+        </label>
+        <div className="flex items-center gap-4 flex-wrap">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 px-4 py-2 border-2 border-dashed border-gold/30 rounded-lg hover:border-burgundy/50 transition-colors text-ink/60 hover:text-burgundy"
+          >
+            {uploading ? (
+              <>
+                <FaSpinner className="animate-spin" /> Uploading...
+              </>
+            ) : (
+              <>
+                <FaUpload /> Upload Image
+              </>
+            )}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
+          {formData.image && (
+            <div className="flex items-center gap-2 text-sm text-green-600">
+              ✅ Image uploaded
+              <button
+                type="button"
+                onClick={() => setFormData((prev) => ({ ...prev, image: "" }))}
+                className="text-red-500 hover:text-red-700"
+              >
+                Remove
+              </button>
+            </div>
+          )}
+        </div>
+        {formData.image && (
+          <div className="mt-2">
+            <img
+              src={formData.image}
+              alt="Feature"
+              className="h-32 object-cover rounded-lg border border-gold/20"
+            />
+          </div>
+        )}
+        <p className="text-xs text-ink/40 mt-1">
+          Upload a feature image (JPG, PNG, WEBP) - Max 5MB
+        </p>
+      </div>
+
+      {/* Main Content */}
       <div>
         <label className="block font-serif font-semibold mb-2 text-ink">
           Content <span className="text-burgundy">*</span> (Markdown)
@@ -153,7 +247,7 @@ export default function PostEditor() {
         </div>
       </div>
 
-      {/* Plain English Version - FIXED */}
+      {/* Plain English Version */}
       <div>
         <label className="block font-serif font-semibold mb-2 text-ink">
           ✨ Plain English Version (Optional)
