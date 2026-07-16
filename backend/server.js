@@ -24,6 +24,8 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/upload", require("./routes/upload"));
 app.use("/api/users", require("./routes/users"));
 app.use("/api/comments", require("./routes/comments"));
+app.use("/api/questions", require("./routes/questions"));
+
 app.get("/", (req, res) => {
   res.json({ message: "⚖️ Law Blog API is running!" });
 });

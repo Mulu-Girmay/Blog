@@ -22,27 +22,24 @@ const CommentSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // ✅ NEW: For nested replies
     parentCommentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
       default: null,
     },
-    // ✅ NEW: For tracking replies
     replies: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comment",
       },
     ],
-    // ✅ NEW: Reactions
+    // ✅ Make sure these fields exist
     reactions: {
       like: { type: Number, default: 0 },
       love: { type: Number, default: 0 },
       insightful: { type: Number, default: 0 },
       question: { type: Number, default: 0 },
     },
-    // ✅ NEW: Track who reacted (to prevent duplicate reactions)
     reactedBy: {
       like: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
       love: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],

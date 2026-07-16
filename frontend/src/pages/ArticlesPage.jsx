@@ -4,8 +4,9 @@ import {
   FaClock,
   FaTag,
   FaUser,
-  FaArrowLeft,
   FaArrowRight,
+  FaSearch,
+  FaFilter,
 } from "react-icons/fa";
 import api from "../services/api";
 import LoadingSpinner from "../components/common/LoadingSpinner";
@@ -17,16 +18,17 @@ export default function ArticlesPage() {
   const [totalPosts, setTotalPosts] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [categories, setCategories] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const categoryFilter = searchParams.get("category") || "";
-  const searchQuery = searchParams.get("search") || "";
+  const searchParam = searchParams.get("search") || "";
   const currentPage = parseInt(searchParams.get("page")) || 1;
   const postsPerPage = 9;
 
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, [categoryFilter, searchQuery, currentPage]);
+  }, [categoryFilter, searchParam, currentPage]);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -35,7 +37,7 @@ export default function ArticlesPage() {
       params.append("limit", postsPerPage);
       params.append("page", currentPage);
       if (categoryFilter) params.append("category", categoryFilter);
-      if (searchQuery) params.append("search", searchQuery);
+      if (searchParam) params.append("search", searchParam);
 
       const res = await api.get(`/posts?${params.toString()}`);
       setPosts(res.data.posts);
@@ -68,180 +70,256 @@ export default function ArticlesPage() {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setSearchParams({ search: searchQuery.trim(), page: 1 });
+    }
+  };
+
   const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-6xl">
-      {/* Header */}
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-serif font-bold text-ink">
-          📚 All Articles
-        </h1>
-        <p className="text-ink/60 mt-2">
-          {totalPosts} {totalPosts === 1 ? "article" : "articles"} published
-        </p>
-        {searchQuery && (
-          <div className="mt-3 inline-flex items-center gap-3 bg-burgundy/5 px-4 py-2 rounded-full">
-            <span className="text-sm text-ink/60">Showing results for:</span>
-            <span className="font-serif font-semibold text-burgundy">
-              "{searchQuery}"
-            </span>
-            <button
-              onClick={() => setSearchParams({})}
-              className="text-sm text-ink/40 hover:text-burgundy transition-colors"
-            >
-              ✕ Clear
-            </button>
+    <div className="container mx-auto px-4 py-12 max-w-7xl">
+      {/* Header - Legal Archive Style */}
+      <div className="border-b-2 border-gold/30 pb-6 mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-serif font-bold text-ink tracking-tight">
+              ARCHIVE <span className="text-burgundy">SELECTION</span>
+            </h1>
+            <p className="text-ink/60 mt-2 max-w-2xl text-sm leading-relaxed">
+              Clear, practical legal analysis for everyday people. Our articles
+              break down complex legal topics into actionable insights on
+              constitutional, civil, and commercial law.
+            </p>
           </div>
-        )}
-        <div className="divider-ampersand mt-6">&amp;</div>
+          <div className="text-sm text-ink/40 font-mono tracking-wider">
+            {totalPosts} {totalPosts === 1 ? "CASE" : "CASES"}
+          </div>
+        </div>
       </div>
 
-      {/* Category Filter */}
-      {categories.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-8 justify-center">
-          <button
-            onClick={() => setSearchParams({})}
-            className={`px-4 py-2 rounded-full text-sm transition-colors ${
-              !categoryFilter && !searchQuery
-                ? "bg-burgundy text-white"
-                : "bg-ink/5 hover:bg-ink/10 text-ink/70"
-            }`}
-          >
-            All Articles
-          </button>
-          {categories.map((cat) => (
+      {/* Search Bar */}
+      <div className="mb-6">
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search cases by title, topic, or keyword..."
+              className="w-full px-4 py-2.5 bg-white/50 dark:bg-ink/5 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 focus:ring-2 focus:ring-burgundy/10 transition-all text-ink placeholder:text-ink/40"
+            />
             <button
-              key={cat}
-              onClick={() => handleCategoryClick(cat)}
-              className={`px-4 py-2 rounded-full text-sm transition-colors flex items-center gap-1 ${
-                categoryFilter === cat
-                  ? "bg-burgundy text-white"
-                  : "bg-ink/5 hover:bg-ink/10 text-ink/70"
+              type="submit"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-ink/40 hover:text-burgundy transition-colors"
+            >
+              <FaSearch />
+            </button>
+          </div>
+          {searchParam && (
+            <button
+              onClick={() => setSearchParams({})}
+              className="px-3 py-2 text-sm text-ink/40 hover:text-burgundy transition-colors"
+            >
+              Clear
+            </button>
+          )}
+        </form>
+      </div>
+
+      {/* Search Results Info */}
+      {searchParam && (
+        <div className="mb-4 text-sm text-ink/50">
+          Showing results for:{" "}
+          <span className="font-serif font-semibold text-ink">
+            "{searchParam}"
+          </span>
+          <span className="ml-2">•</span>
+          <span className="ml-2">
+            {totalPosts} {totalPosts === 1 ? "result" : "results"}
+          </span>
+        </div>
+      )}
+
+      {/* Filter Bar - Legal Style */}
+      <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-gold/10 mb-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap gap-1">
+            <button
+              onClick={() => setSearchParams({})}
+              className={`px-3 py-1 text-xs transition-colors ${
+                !categoryFilter && !searchParam
+                  ? "text-burgundy font-serif font-semibold border-b-2 border-burgundy"
+                  : "text-ink/50 hover:text-ink/80"
               }`}
             >
-              <FaTag className="text-[10px]" /> {cat}
+              All
             </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => handleCategoryClick(cat)}
+                className={`px-3 py-1 text-xs transition-colors ${
+                  categoryFilter === cat
+                    ? "text-burgundy font-serif font-semibold border-b-2 border-burgundy"
+                    : "text-ink/50 hover:text-ink/80"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-ink/40">
+          <span>Sort by:</span>
+          <select className="bg-transparent border-none text-ink/60 focus:outline-none font-serif">
+            <option>Most Recent</option>
+            <option>Oldest</option>
+            <option>Most Viewed</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Articles Grid - Legal Archive Style */}
+      {posts.length === 0 ? (
+        <div className="text-center py-16">
+          <div className="text-6xl mb-4">📜</div>
+          <h3 className="text-xl font-serif font-semibold text-ink">
+            No cases found
+          </h3>
+          <p className="text-ink/60">
+            {searchParam
+              ? `No results found for "${searchParam}"`
+              : "No articles published yet"}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {posts.map((post, index) => (
+            <ArticleCard key={post._id} post={post} index={index} />
           ))}
         </div>
       )}
 
-      {/* Results count */}
-      {searchQuery && (
-        <p className="text-sm text-ink/50 mb-6 text-center">
-          Found{" "}
-          <span className="font-serif font-bold text-ink">{totalPosts}</span>{" "}
-          results
-        </p>
-      )}
-
-      {/* Articles Grid */}
-      {posts.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-6xl mb-4">🔍</div>
-          <h3 className="text-xl font-serif font-semibold mb-2 text-ink">
-            No articles found
-          </h3>
-          <p className="text-ink/60">
-            {searchQuery
-              ? `No results found for "${searchQuery}"`
-              : categoryFilter
-                ? `No articles in "${categoryFilter}" category`
-                : "No articles published yet"}
-          </p>
-          {(searchQuery || categoryFilter) && (
-            <button
-              onClick={() => setSearchParams({})}
-              className="mt-4 text-burgundy hover:underline"
-            >
-              Clear all filters
-            </button>
-          )}
+      {/* Pagination - Legal Style */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-10 pt-6 border-t border-gold/10">
+          <button
+            onClick={() =>
+              setSearchParams({
+                page: currentPage - 1,
+                ...(categoryFilter && { category: categoryFilter }),
+                ...(searchParam && { search: searchParam }),
+              })
+            }
+            disabled={currentPage === 1}
+            className="px-4 py-2 text-sm border border-gold/20 rounded hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink"
+          >
+            Previous
+          </button>
+          <span className="text-sm text-ink/40 font-mono">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() =>
+              setSearchParams({
+                page: currentPage + 1,
+                ...(categoryFilter && { category: categoryFilter }),
+                ...(searchParam && { search: searchParam }),
+              })
+            }
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 text-sm border border-gold/20 rounded hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink"
+          >
+            Next
+          </button>
         </div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {posts.map((post) => (
-              <ArticleCard key={post._id} post={post} />
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-12">
-              <button
-                onClick={() =>
-                  setSearchParams({
-                    page: currentPage - 1,
-                    ...(categoryFilter && { category: categoryFilter }),
-                    ...(searchQuery && { search: searchQuery }),
-                  })
-                }
-                disabled={currentPage === 1}
-                className="px-4 py-2 border border-gold/20 rounded-lg hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink flex items-center gap-1"
-              >
-                <FaArrowLeft className="text-xs" /> Previous
-              </button>
-              <span className="text-sm text-ink/60">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  setSearchParams({
-                    page: currentPage + 1,
-                    ...(categoryFilter && { category: categoryFilter }),
-                    ...(searchQuery && { search: searchQuery }),
-                  })
-                }
-                disabled={currentPage === totalPages}
-                className="px-4 py-2 border border-gold/20 rounded-lg hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink flex items-center gap-1"
-              >
-                Next <FaArrowRight className="text-xs" />
-              </button>
-            </div>
-          )}
-        </>
       )}
     </div>
   );
 }
 
-// Article Card Component
-function ArticleCard({ post }) {
+// Article Card Component - Legal Archive Style
+function ArticleCard({ post, index }) {
+  const categoryColors = {
+    "General Legal Articles": "bg-burgundy/10 text-burgundy",
+    "Constitutional Law":
+      "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+    "Criminal Law":
+      "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+    "Family Law":
+      "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
+    "Property Law":
+      "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+    "Civil Law":
+      "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+    "Employment Law":
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+    "Consumer Rights":
+      "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
+  };
+
+  const defaultColor = "bg-ink/5 text-ink/60";
+  const categoryColor = categoryColors[post.category] || defaultColor;
+
   return (
-    <article className="group bg-white/50 dark:bg-ink/5 rounded-lg overflow-hidden border border-gold/10 hover:border-burgundy/20 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-      {post.image && (
-        <div
-          className="h-48 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-          style={{ backgroundImage: `url(${post.image})` }}
-        />
-      )}
-      <div className="p-5">
-        <div className="flex items-center gap-2 text-xs text-ink/50 mb-2">
-          <span className="px-2 py-1 bg-burgundy/5 text-burgundy rounded-full flex items-center gap-1">
-            <FaTag className="text-[10px]" /> {post.category || "General"}
+    <article className="group border-b border-gold/10 pb-6 hover:border-burgundy/20 transition-colors">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        {/* Left - Category Badge & Number */}
+        <div className="md:w-32 flex-shrink-0 flex flex-row md:flex-col items-center md:items-start gap-3 md:gap-2">
+          <span
+            className={`px-3 py-1 text-[10px] font-mono tracking-wider uppercase rounded ${categoryColor}`}
+          >
+            {post.category || "General"}
           </span>
-          <span>•</span>
-          <span className="flex items-center gap-1">
-            <FaClock className="text-[10px]" /> {post.readTime || 3} min
+          <span className="text-xs font-mono text-ink/20 group-hover:text-ink/40 transition-colors">
+            #{String(index + 1).padStart(3, "0")}
           </span>
         </div>
-        <Link to={`/post/${post.slug}`}>
-          <h3 className="font-serif text-xl font-bold leading-tight mb-2 group-hover:text-burgundy transition-colors line-clamp-2 text-ink">
-            {post.title}
-          </h3>
-        </Link>
-        <p className="text-sm text-ink/70 line-clamp-2 mb-3">{post.excerpt}</p>
-        <div className="flex items-center justify-between text-sm border-t border-gold/10 pt-3">
-          <span className="font-serif text-xs text-ink/60 flex items-center gap-1">
-            <FaUser className="text-[10px]" />{" "}
-            {post.author?.name || "Kalayus Blog"}
-          </span>
-          <span className="text-xs text-ink/40">
-            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-          </span>
+
+        {/* Center - Content */}
+        <div className="flex-1 min-w-0">
+          <Link to={`/post/${post.slug}`}>
+            <h2 className="text-xl md:text-2xl font-serif font-bold text-ink group-hover:text-burgundy transition-colors leading-tight">
+              {post.title}
+            </h2>
+          </Link>
+          <p className="text-sm text-ink/60 mt-2 leading-relaxed max-w-2xl">
+            {post.excerpt}
+          </p>
+          <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-ink/40">
+            <span className="flex items-center gap-1">
+              <FaUser className="text-[10px]" />{" "}
+              {post.author?.name || "Kalayus Blog"}
+            </span>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <FaClock className="text-[10px]" /> {post.readTime || 3} min read
+            </span>
+            <span>•</span>
+            <span>
+              {new Date(post.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          </div>
+        </div>
+
+        {/* Right - Read More */}
+        <div className="md:w-24 flex-shrink-0 flex items-center md:items-start justify-end">
+          <Link
+            to={`/post/${post.slug}`}
+            className="text-xs font-mono tracking-wider text-burgundy hover:underline flex items-center gap-1 group-hover:gap-2 transition-all"
+          >
+            READ <span className="hidden sm:inline">MORE</span>{" "}
+            <FaArrowRight className="text-[10px]" />
+          </Link>
         </div>
       </div>
     </article>

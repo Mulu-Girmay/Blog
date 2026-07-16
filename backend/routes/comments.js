@@ -6,7 +6,6 @@ const auth = require("../middleware/auth");
 // GET comments for a post (including replies)
 router.get("/post/:postId", async (req, res) => {
   try {
-    // Get top-level comments (parentCommentId = null)
     const comments = await Comment.find({
       postId: req.params.postId,
       isApproved: true,
@@ -16,7 +15,6 @@ router.get("/post/:postId", async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(100);
 
-    // Get all replies for these comments
     const commentIds = comments.map((c) => c._id);
     const replies = await Comment.find({
       parentCommentId: { $in: commentIds },
@@ -25,7 +23,6 @@ router.get("/post/:postId", async (req, res) => {
       .populate("author", "username")
       .sort({ createdAt: 1 });
 
-    // Group replies by parent
     const repliesMap = {};
     replies.forEach((reply) => {
       const parentId = reply.parentCommentId.toString();
@@ -33,7 +30,6 @@ router.get("/post/:postId", async (req, res) => {
       repliesMap[parentId].push(reply);
     });
 
-    // Attach replies to comments
     const commentsWithReplies = comments.map((comment) => {
       const commentObj = comment.toObject();
       commentObj.replies = repliesMap[comment._id.toString()] || [];
@@ -66,7 +62,6 @@ router.post("/", auth, async (req, res) => {
 
     await comment.save();
 
-    // If this is a reply, add to parent's replies array
     if (parentCommentId) {
       await Comment.findByIdAndUpdate(parentCommentId, {
         $push: { replies: comment._id },
@@ -81,9 +76,12 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// ✅ NEW: Add reaction to comment
-router.post("/:id/react", auth, async (req, res) => {
+async function toggleReaction(req, res) {
   try {
+    console.log("📡 Reaction request received for comment:", req.params.id);
+    console.log("📡 Reaction type:", req.body.reaction);
+    console.log("📡 User:", req.user.id);
+
     const { reaction } = req.body;
     const validReactions = ["like", "love", "insightful", "question"];
 
@@ -97,25 +95,48 @@ router.post("/:id/react", auth, async (req, res) => {
     }
 
     const userId = req.user.id;
-    const reactionField = `reactedBy.${reaction}`;
-    const countField = `reactions.${reaction}`;
+
+    // Initialize reactions if they don't exist
+    if (!comment.reactions) {
+      comment.reactions = { like: 0, love: 0, insightful: 0, question: 0 };
+    }
+    if (!comment.reactedBy) {
+      comment.reactedBy = { like: [], love: [], insightful: [], question: [] };
+    }
 
     // Check if user already reacted with this reaction
     const alreadyReacted = comment.reactedBy[reaction]?.includes(userId);
 
     if (alreadyReacted) {
       // Remove reaction
-      comment[reactionField] = comment.reactedBy[reaction].filter(
+      comment.reactedBy[reaction] = comment.reactedBy[reaction].filter(
         (id) => id.toString() !== userId,
       );
-      comment[countField] = Math.max(0, (comment[countField] || 0) - 1);
+      comment.reactions[reaction] = Math.max(
+        0,
+        (comment.reactions[reaction] || 0) - 1,
+      );
+      console.log(`👎 Removed ${reaction} reaction`);
     } else {
-      // Add reaction
-      comment[reactionField].push(userId);
-      comment[countField] = (comment[countField] || 0) + 1;
+      // Check if user reacted with something else and remove that
+      for (const r of validReactions) {
+        if (r !== reaction && comment.reactedBy[r]?.includes(userId)) {
+          comment.reactedBy[r] = comment.reactedBy[r].filter(
+            (id) => id.toString() !== userId,
+          );
+          comment.reactions[r] = Math.max(0, (comment.reactions[r] || 0) - 1);
+          console.log(`👎 Removed previous ${r} reaction`);
+        }
+      }
+
+      // Add new reaction
+      comment.reactedBy[reaction].push(userId);
+      comment.reactions[reaction] = (comment.reactions[reaction] || 0) + 1;
+      console.log(`👍 Added ${reaction} reaction`);
     }
 
     await comment.save();
+    console.log("✅ Reaction saved successfully");
 
     res.json({
       reaction,
@@ -123,9 +144,13 @@ router.post("/:id/react", auth, async (req, res) => {
       reacted: !alreadyReacted,
     });
   } catch (err) {
+    console.error("❌ Reaction error:", err);
     res.status(500).json({ error: err.message });
   }
-});
+}
+
+router.post("/:id/react", auth, toggleReaction);
+router.post("/react/:id", auth, toggleReaction);
 
 // DELETE comment (admin or comment author)
 router.delete("/:id", auth, async (req, res) => {
@@ -135,7 +160,6 @@ router.delete("/:id", auth, async (req, res) => {
       return res.status(404).json({ error: "Comment not found" });
     }
 
-    // Allow if admin or comment author
     if (
       req.user.role !== "admin" &&
       comment.author.toString() !== req.user.id
@@ -143,7 +167,6 @@ router.delete("/:id", auth, async (req, res) => {
       return res.status(403).json({ error: "Not authorized" });
     }
 
-    // Delete all replies first
     if (comment.replies && comment.replies.length > 0) {
       await Comment.deleteMany({ _id: { $in: comment.replies } });
     }

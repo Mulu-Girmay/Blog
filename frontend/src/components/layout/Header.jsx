@@ -94,25 +94,12 @@ export default function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-2 md:space-x-4">
-            {/* ✅ FIXED: Search form */}
-            <form
-              onSubmit={handleSearch}
-              className="hidden md:flex items-center"
+            <button
+              type="submit"
+              className="ml-2 text-ink/60 hover:text-burgundy transition-colors"
             >
-              <input
-                type="text"
-                placeholder="Search articles..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-3 py-1.5 text-sm focus:outline-none focus:border-burgundy/50 transition-colors w-32 lg:w-48 text-ink placeholder:text-ink/40"
-              />
-              <button
-                type="submit"
-                className="ml-2 text-ink/60 hover:text-burgundy transition-colors"
-              >
-                <FaSearch />
-              </button>
-            </form>
+              <FaSearch />
+            </button>
 
             {/* Dark mode toggle */}
             <button
@@ -219,21 +206,13 @@ export default function Header() {
             </Link>
           )}
           {/* ✅ FIXED: Mobile search */}
-          <form onSubmit={handleSearch} className="flex items-center ml-auto">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-2 py-0.5 text-sm w-24 focus:outline-none focus:border-burgundy/50 text-ink placeholder:text-ink/40"
-            />
-            <button
-              type="submit"
-              className="ml-1 text-ink/60 hover:text-burgundy"
-            >
-              <FaSearch className="text-xs" />
-            </button>
-          </form>
+
+          <button
+            type="submit"
+            className="ml-1 text-ink/60 hover:text-burgundy"
+          >
+            <FaSearch className="text-xs" />
+          </button>
         </div>
       </div>
     </header>
