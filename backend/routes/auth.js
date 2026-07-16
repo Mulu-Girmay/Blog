@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const User = require("../models/User");
 const auth = require("../middleware/auth");
 
 // REGISTER - PUBLIC (only for guests)
@@ -171,25 +171,6 @@ router.put("/change-password", auth, async (req, res) => {
     await user.save();
 
     res.json({ message: "Password changed successfully" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-// ✅ UPDATE PROFILE (authenticated)
-router.put("/profile", auth, async (req, res) => {
-  try {
-    const { email, bio } = req.body;
-    const user = await User.findById(req.user.id);
-
-    if (email) user.email = email;
-    if (bio !== undefined) user.bio = bio;
-
-    await user.save();
-
-    const userResponse = user.toObject();
-    delete userResponse.password;
-
-    res.json(userResponse);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

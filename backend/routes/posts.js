@@ -4,7 +4,7 @@ const Post = require("../models/Post");
 const auth = require("../middleware/auth");
 const slugify = require("slugify");
 const { sendNewPostNotification } = require("../services/emailService");
-const User = require("../models/user");
+const User = require("../models/User");
 
 // GET all posts (public)
 // GET all posts with search
