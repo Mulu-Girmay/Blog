@@ -37,6 +37,13 @@ function App() {
             color: "#2C2C2C",
             border: "1px solid rgba(139,58,58,0.1)",
           },
+          dark: {
+            style: {
+              background: "#1a1a1a",
+              color: "#e8e8e8",
+              border: "1px solid rgba(160,82,82,0.2)",
+            },
+          },
         }}
       />
     </AuthProvider>

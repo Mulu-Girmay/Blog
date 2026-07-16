@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useDarkMode } from "../../context/DarkModeContext";
 import {
   FaSearch,
   FaUser,
@@ -15,8 +16,8 @@ import {
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -34,7 +35,7 @@ export default function Header() {
   };
 
   return (
-    <header className="border-b border-gold/20 bg-cream/80 backdrop-blur-sm sticky top-0 z-50">
+    <header className="border-b border-gold/20 bg-cream/80 backdrop-blur-sm sticky top-0 z-50 transition-colors duration-300">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -44,7 +45,7 @@ export default function Header() {
             </span>
             <div className="hidden sm:block">
               <h1 className="text-xl md:text-2xl font-serif font-bold text-ink leading-tight">
-                Kalayu's <span className="text-burgundy">Blogs </span>
+                Kalayus <span className="text-burgundy">Blog</span>
               </h1>
               <p className="text-[10px] md:text-xs text-ink/60 font-sans tracking-wider italic hidden xs:block">
                 Legal clarity in a complex world
@@ -66,12 +67,14 @@ export default function Header() {
             >
               Articles
             </Link>
-            <Link
-              to="/ask"
-              className="text-ink/80 hover:text-burgundy transition-colors text-sm flex items-center gap-1"
-            >
-              <FaQuestionCircle /> Ask
-            </Link>
+            {(!user || user.role !== "admin") && (
+              <Link
+                to="/ask"
+                className="text-ink/80 hover:text-burgundy transition-colors flex items-center gap-1"
+              >
+                <FaQuestionCircle /> Ask
+              </Link>
+            )}
             <Link
               to="/about"
               className="text-ink/80 hover:text-burgundy transition-colors text-sm"
@@ -100,7 +103,7 @@ export default function Header() {
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-white/50 border border-gold/20 rounded-full px-3 py-1.5 text-sm focus:outline-none focus:border-burgundy/50 transition-colors w-32 lg:w-48"
+                className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-3 py-1.5 text-sm focus:outline-none focus:border-burgundy/50 transition-colors w-32 lg:w-48 text-ink"
               />
               <button
                 type="submit"
@@ -110,13 +113,13 @@ export default function Header() {
               </button>
             </form>
 
-            {/* Dark mode toggle */}
+            {/* Dark mode toggle - NOW FUNCTIONAL */}
             <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="text-ink/60 hover:text-burgundy transition-colors p-2"
+              onClick={toggleDarkMode}
+              className="text-ink/60 hover:text-burgundy transition-colors p-2 rounded-full hover:bg-burgundy/10"
               aria-label="Toggle dark mode"
             >
-              {darkMode ? <FaSun /> : <FaMoon />}
+              {darkMode ? <FaSun className="text-gold" /> : <FaMoon />}
             </button>
 
             {/* User Menu */}
@@ -134,7 +137,7 @@ export default function Header() {
 
                 {/* Dropdown Menu */}
                 {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-48 bg-cream border border-gold/20 rounded-lg shadow-magazine py-2 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-cream dark:bg-ink/10 border border-gold/20 rounded-lg shadow-magazine py-2 z-50">
                     <Link
                       to="/profile"
                       onClick={() => setShowUserMenu(false)}
@@ -161,7 +164,7 @@ export default function Header() {
                     <hr className="border-gold/20 my-1" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors w-full text-left"
                     >
                       <FaSignOutAlt /> Logout
                     </button>
@@ -221,7 +224,7 @@ export default function Header() {
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/50 border border-gold/20 rounded-full px-2 py-0.5 text-sm w-24 focus:outline-none focus:border-burgundy/50"
+              className="bg-white/50 dark:bg-ink/10 border border-gold/20 rounded-full px-2 py-0.5 text-sm w-24 focus:outline-none focus:border-burgundy/50 text-ink"
             />
             <button type="submit" className="ml-1 text-ink/60">
               <FaSearch className="text-xs" />
