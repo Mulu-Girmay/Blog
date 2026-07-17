@@ -39,21 +39,6 @@ export function AuthProvider({ children }) {
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setUser(user);
 
-      // ✅ Debug: Log the user role
-      console.log("✅ Logged in user:", user);
-      console.log("✅ User role:", user.role);
-
-      // Custom welcome message based on role
-      if (user.role === "guest") {
-        toast.success(`Welcome ${user.username}! 📖`);
-      } else if (user.role === "author") {
-        toast.success(`Welcome back, ${user.username}! ✍️`);
-      } else if (user.role === "admin") {
-        toast.success(`Welcome back, ${user.username}! ⚖️`);
-      } else {
-        toast.success(`Welcome ${user.username}!`);
-      }
-
       return { success: true, user };
     } catch (err) {
       toast.error(err.response?.data?.error || "Login failed");
@@ -68,10 +53,6 @@ export function AuthProvider({ children }) {
     toast.success("Logged out");
   };
 
-  const isAdmin = user?.role === "admin";
-  const isAuthor = user?.role === "author" || user?.role === "admin";
-  const isGuest = user?.role === "guest";
-
   return (
     <AuthContext.Provider
       value={{
@@ -79,9 +60,6 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
-        isAdmin,
-        isAuthor,
-        isGuest,
       }}
     >
       {children}

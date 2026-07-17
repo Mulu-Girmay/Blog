@@ -12,6 +12,8 @@ import {
   FaUserCircle,
   FaBookmark,
   FaSignOutAlt,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 
 export default function Header() {
@@ -20,6 +22,8 @@ export default function Header() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   // ✅ FIXED: Search handler
   const handleSearch = (e) => {
@@ -39,18 +43,18 @@ export default function Header() {
 
   return (
     <header className="border-b border-gold/20 bg-cream/80 backdrop-blur-sm sticky top-0 z-50 transition-colors duration-300">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex items-center justify-between gap-2">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <span className="text-3xl font-serif font-bold text-burgundy">
               ⚖️
             </span>
             <div className="hidden sm:block">
-              <h1 className="text-xl md:text-2xl font-serif font-bold text-ink leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-ink leading-tight">
                 Kalayus <span className="text-burgundy">Blog</span>
               </h1>
-              <p className="text-[10px] md:text-xs text-ink/60 font-sans tracking-wider italic hidden xs:block">
+              <p className="text-xs md:text-sm text-ink/60 font-sans tracking-wider italic hidden sm:block">
                 Legal clarity in a complex world
               </p>
             </div>
@@ -60,25 +64,25 @@ export default function Header() {
           <nav className="hidden lg:flex items-center space-x-6 font-serif">
             <Link
               to="/"
-              className="text-ink/80 hover:text-burgundy transition-colors text-sm"
+              className="text-ink/80 hover:text-burgundy transition-colors text-sm lg:text-base"
             >
               Home
             </Link>
             <Link
               to="/articles"
-              className="text-ink/80 hover:text-burgundy transition-colors text-sm"
+              className="text-ink/80 hover:text-burgundy transition-colors text-sm lg:text-base"
             >
               Articles
             </Link>
             <Link
               to="/ask"
-              className="text-ink/80 hover:text-burgundy transition-colors text-sm flex items-center gap-1"
+              className="text-ink/80 hover:text-burgundy transition-colors text-sm lg:text-base flex items-center gap-1"
             >
               <FaQuestionCircle /> Ask
             </Link>
             <Link
               to="/about"
-              className="text-ink/80 hover:text-burgundy transition-colors text-sm"
+              className="text-ink/80 hover:text-burgundy transition-colors text-sm lg:text-base"
             >
               About
             </Link>
@@ -93,10 +97,19 @@ export default function Header() {
           </nav>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-2 md:space-x-4">
+          <div className="flex items-center space-x-1 md:space-x-3">
+            {/* Hamburger - all sizes below lg */}
             <button
-              type="submit"
-              className="ml-2 text-ink/60 hover:text-burgundy transition-colors"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-ink/60 hover:text-burgundy transition-colors rounded-full hover:bg-burgundy/10"
+              aria-label="Menu"
+            >
+              {showMobileMenu ? <FaTimes /> : <FaBars />}
+            </button>
+            <button
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+              className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-ink/60 hover:text-burgundy transition-colors rounded-full hover:bg-burgundy/10"
+              aria-label="Search"
             >
               <FaSearch />
             </button>
@@ -104,7 +117,7 @@ export default function Header() {
             {/* Dark mode toggle */}
             <button
               onClick={toggleDarkMode}
-              className="text-ink/60 hover:text-burgundy transition-colors p-2 rounded-full hover:bg-burgundy/10"
+              className="text-ink/60 hover:text-burgundy transition-colors p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full hover:bg-burgundy/10"
               aria-label="Toggle dark mode"
             >
               {darkMode ? <FaSun className="text-gold" /> : <FaMoon />}
@@ -115,7 +128,7 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center gap-2 text-ink/80 hover:text-burgundy transition-colors"
+                  className="flex items-center gap-2 text-ink/80 hover:text-burgundy transition-colors min-h-[44px] px-1"
                 >
                   <FaUserCircle className="text-2xl" />
                   <span className="hidden md:inline text-sm">
@@ -171,49 +184,49 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile navigation */}
-        <div className="flex lg:hidden mt-3 space-x-4 text-sm overflow-x-auto pb-1">
-          <Link
-            to="/"
-            className="text-ink/80 hover:text-burgundy whitespace-nowrap"
-          >
-            Home
-          </Link>
-          <Link
-            to="/articles"
-            className="text-ink/80 hover:text-burgundy whitespace-nowrap"
-          >
-            Articles
-          </Link>
-          <Link
-            to="/ask"
-            className="text-ink/80 hover:text-burgundy whitespace-nowrap flex items-center gap-1"
-          >
-            <FaQuestionCircle className="text-xs" /> Ask
-          </Link>
-          <Link
-            to="/about"
-            className="text-ink/80 hover:text-burgundy whitespace-nowrap"
-          >
-            About
-          </Link>
-          {user && (user.role === "admin" || user.role === "author") && (
-            <Link
-              to="/admin"
-              className="text-burgundy hover:text-burgundy/80 whitespace-nowrap"
-            >
-              <FaPen className="inline mr-1" /> Write
-            </Link>
-          )}
-          {/* ✅ FIXED: Mobile search */}
+        {/* Mobile search bar */}
+        {showMobileSearch && (
+          <form onSubmit={handleSearch} className="lg:hidden mt-3">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search articles..."
+                autoFocus
+                className="w-full px-4 py-2.5 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-sm"
+              />
+              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-burgundy">
+                <FaSearch className="text-sm" />
+              </button>
+            </div>
+          </form>
+        )}
 
-          <button
-            type="submit"
-            className="ml-1 text-ink/60 hover:text-burgundy"
-          >
-            <FaSearch className="text-xs" />
-          </button>
-        </div>
+        {/* Hamburger dropdown menu - all sizes below lg */}
+        {showMobileMenu && (
+          <div className="lg:hidden mt-2 border-t border-gold/20 pt-2 flex flex-col">
+            <Link onClick={() => setShowMobileMenu(false)} to="/" className="px-4 py-3 text-base text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors">
+              Home
+            </Link>
+            <Link onClick={() => setShowMobileMenu(false)} to="/articles" className="px-4 py-3 text-base text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors">
+              Articles
+            </Link>
+            <Link onClick={() => setShowMobileMenu(false)} to="/ask" className="px-4 py-3 text-base text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors flex items-center gap-2">
+              <FaQuestionCircle className="text-sm" /> Ask
+            </Link>
+            <Link onClick={() => setShowMobileMenu(false)} to="/about" className="px-4 py-3 text-base text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors">
+              About
+            </Link>
+            {user && (user.role === "admin" || user.role === "author") && (
+              <Link onClick={() => setShowMobileMenu(false)} to="/admin" className="px-4 py-3 text-base text-burgundy hover:bg-burgundy/5 transition-colors flex items-center gap-2">
+                <FaPen className="text-sm" /> Write
+              </Link>
+            )}
+          </div>
+        )}
+
+
       </div>
     </header>
   );

@@ -44,10 +44,10 @@ export default function PostPage() {
     plainEnglish && post.plainEnglish ? post.plainEnglish : post.content;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
       {/* Article header */}
-      <header className="mb-8">
-        <div className="flex items-center gap-3 text-sm text-ink/50 mb-4">
+      <header className="mb-6 md:mb-8">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-ink/50 mb-4">
           <span className="px-3 py-1 bg-burgundy/5 text-burgundy rounded-full font-serif text-xs tracking-wider uppercase">
             {post.category}
           </span>
@@ -56,10 +56,10 @@ export default function PostPage() {
             <FaClock /> {post.readTime} min read
           </span>
         </div>
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold leading-tight">
           {post.title}
         </h1>
-        <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-ink/60">
+        <div className="flex flex-wrap items-center gap-3 mt-4 text-sm text-ink/60">
           <span className="flex items-center gap-2">
             <FaUser /> {post.author.name}
           </span>
@@ -72,10 +72,9 @@ export default function PostPage() {
               day: "numeric",
             })}
           </span>
-          <span>•</span>
           <button
             onClick={() => window.print()}
-            className="flex items-center gap-1 hover:text-burgundy transition-colors"
+            className="flex items-center gap-1 hover:text-burgundy transition-colors min-h-[36px] px-2"
           >
             <FaPrint /> Print
           </button>
@@ -107,8 +106,8 @@ export default function PostPage() {
       </article>
 
       {/* Author bio */}
-      <div className="magazine-card p-6 mt-12 flex flex-wrap items-center gap-6">
-        <div className="w-16 h-16 rounded-full bg-burgundy/10 flex items-center justify-center text-2xl">
+      <div className="magazine-card p-5 md:p-6 mt-10 md:mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-6">
+        <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-burgundy/10 flex items-center justify-center text-2xl flex-shrink-0">
           ⚖️
         </div>
         <div className="flex-1">
@@ -120,7 +119,7 @@ export default function PostPage() {
         </div>
         <Link
           to="/ask"
-          className="bg-burgundy/10 text-burgundy px-4 py-2 rounded-full text-sm hover:bg-burgundy/20 transition-colors"
+          className="bg-burgundy/10 text-burgundy px-4 py-2.5 rounded-full text-sm hover:bg-burgundy/20 transition-colors min-h-[44px] flex items-center"
         >
           Ask a Question
         </Link>

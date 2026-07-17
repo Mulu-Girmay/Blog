@@ -37,18 +37,18 @@ export default function HomePage() {
 
       {/* Featured Post (Full Width) */}
       {featured && (
-        <div className="container mx-auto px-4 mb-12">
+        <div className="container mx-auto px-4 mb-8 md:mb-12">
           <div className="magazine-card overflow-hidden">
             <div className="flex flex-col md:flex-row">
-              <div className="md:w-2/3 p-8 md:p-12">
+              <div className="flex-1 p-6 md:p-12">
                 <span className="inline-block px-3 py-1 bg-burgundy/10 text-burgundy text-xs font-serif tracking-wider uppercase mb-4">
                   Featured Article
                 </span>
-                <h2 className="text-3xl md:text-4xl font-serif font-bold mb-3">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-3">
                   {featured.title}
                 </h2>
-                <p className="text-ink/70 mb-4">{featured.excerpt}</p>
-                <div className="flex items-center gap-4 text-sm text-ink/50">
+                <p className="text-ink/70 mb-4 text-sm md:text-base">{featured.excerpt}</p>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-ink/50">
                   <span>By {featured.author.name}</span>
                   <span>•</span>
                   <span>{featured.readTime} min read</span>
@@ -62,7 +62,7 @@ export default function HomePage() {
               </div>
               {featured.image && (
                 <div
-                  className="md:w-1/3 bg-cover bg-center min-h-[200px] md:min-h-[300px]"
+                  className="md:w-2/5 bg-cover bg-center min-h-[200px] md:min-h-[300px]"
                   style={{ backgroundImage: `url(${featured.image})` }}
                 />
               )}
@@ -72,15 +72,11 @@ export default function HomePage() {
       )}
 
       <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-3/4">
-            <div className="divider-ampersand my-8">Recent Articles</div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {regularPosts.map((post) => (
-                <PostCard key={post._id} post={post} />
-              ))}
-            </div>
-          </div>
+        <div className="divider-ampersand my-8">Recent Articles</div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {regularPosts.map((post) => (
+            <PostCard key={post._id} post={post} />
+          ))}
         </div>
       </div>
     </div>

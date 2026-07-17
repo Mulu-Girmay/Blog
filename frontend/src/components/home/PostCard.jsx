@@ -10,7 +10,7 @@ export default function PostCard({ post }) {
     <article className="magazine-card p-5 hover:translate-y-[-4px] transition-all duration-300">
       {post.image && (
         <div
-          className="mb-4 rounded-md overflow-hidden h-48 bg-cover bg-center"
+          className="mb-4 rounded-md overflow-hidden h-44 sm:h-48 bg-cover bg-center"
           style={{ backgroundImage: `url(${post.image})` }}
         />
       )}

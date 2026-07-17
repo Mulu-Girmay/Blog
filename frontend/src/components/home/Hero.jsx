@@ -4,30 +4,30 @@ import { FaArrowRight, FaQuestionCircle } from "react-icons/fa";
 
 export default function Hero() {
   return (
-    <section className="relative py-16 mb-12 paper-texture">
+    <section className="relative py-12 md:py-16 mb-8 md:mb-12 paper-texture">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
           {/* Left content */}
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight">
               Law made <span className="text-burgundy italic">simple</span>.
               <br />
               No jargon. Just <span className="text-gold">clarity</span>.
             </h1>
-            <p className="mt-4 text-lg text-ink/70 font-body max-w-xl mx-auto md:mx-0">
+            <p className="mt-4 text-base md:text-lg text-ink/70 font-body max-w-xl mx-auto md:mx-0">
               Breaking down complex legal topics into clear, actionable insights
               for everyday people.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4 justify-center md:justify-start">
+            <div className="mt-6 md:mt-8 flex flex-col sm:flex-row flex-wrap gap-3 justify-center md:justify-start">
               <Link
                 to="/articles"
-                className="bg-burgundy text-white px-8 py-3 rounded-full font-serif hover:bg-burgundy/90 transition-colors flex items-center gap-2"
+                className="bg-burgundy text-white px-6 py-3 rounded-full font-serif hover:bg-burgundy/90 transition-colors flex items-center justify-center gap-2 min-h-[48px]"
               >
                 Browse Articles <FaArrowRight />
               </Link>
               <Link
                 to="/ask"
-                className="border-2 border-burgundy/30 text-ink px-8 py-3 rounded-full font-serif hover:bg-burgundy/5 transition-colors flex items-center gap-2"
+                className="border-2 border-burgundy/30 text-ink px-6 py-3 rounded-full font-serif hover:bg-burgundy/5 transition-colors flex items-center justify-center gap-2 min-h-[48px]"
               >
                 <FaQuestionCircle /> Ask a Question
               </Link>
@@ -35,9 +35,9 @@ export default function Hero() {
           </div>
 
           {/* Right - Author badge */}
-          <div className="flex-1 max-w-sm">
-            <div className="magazine-card p-8 text-center">
-              <div className="w-24 h-24 mx-auto rounded-full bg-burgundy/10 flex items-center justify-center text-4xl mb-4">
+          <div className="w-full md:flex-1 md:max-w-sm">
+            <div className="magazine-card p-6 md:p-8 text-center">
+              <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-burgundy/10 flex items-center justify-center text-3xl md:text-4xl mb-4">
                 ⚖️
               </div>
               <h3 className="font-serif text-xl font-bold">Kalayu Hagose</h3>

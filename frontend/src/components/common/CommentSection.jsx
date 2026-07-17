@@ -258,7 +258,7 @@ export default function CommentSection({ postId }) {
                     <FaSmile />
                   </button>
                   {showEmojiPicker && (
-                    <div className="absolute top-[-200px] left-0 bg-cream dark:bg-ink/10 border border-gold/20 rounded-lg shadow-lg p-3 z-10 w-64">
+                    <div className="absolute top-[-200px] left-0 right-0 sm:right-auto bg-cream dark:bg-ink/10 border border-gold/20 rounded-lg shadow-lg p-3 z-10 w-full sm:w-64">
                       <div className="flex flex-wrap gap-1">
                         {[
                           "😊",
@@ -568,7 +568,7 @@ function CommentItem({
 
       {/* Reply Form */}
       {showReplyForm && replyingTo === comment._id && (
-        <form onSubmit={handleReply} className="mt-4 ml-12">
+        <form onSubmit={handleReply} className="mt-4 ml-6 sm:ml-12">
           <div className="flex gap-2 items-start">
             <div className="w-8 h-8 rounded-full bg-burgundy/10 flex items-center justify-center flex-shrink-0 text-sm font-bold text-burgundy">
               {user?.username?.charAt(0).toUpperCase() || "👤"}
@@ -608,7 +608,7 @@ function CommentItem({
 
       {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-12 mt-3 space-y-3 border-l-2 border-gold/20 pl-4">
+        <div className="ml-6 sm:ml-12 mt-3 space-y-3 border-l-2 border-gold/20 pl-3 sm:pl-4">
           {comment.replies.map((reply) => (
             <CommentItem
               key={reply._id}

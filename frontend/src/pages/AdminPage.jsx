@@ -31,7 +31,7 @@ export default function AdminPage() {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
   const [stats, setStats] = useState({
     totalPosts: 0,
     totalQuestions: 0,
@@ -342,7 +342,7 @@ export default function AdminPage() {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => handleTabChange(item.id)}
+              onClick={() => { handleTabChange(item.id); if (window.innerWidth < 1024) setSidebarOpen(false); }}
               className={`
                 w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200
                 ${
@@ -433,7 +433,7 @@ export default function AdminPage() {
           {activeTab === "dashboard" && (
             <div>
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
                 <StatCard
                   icon={<FaNewspaper className="text-xl" />}
                   label="Total Posts"

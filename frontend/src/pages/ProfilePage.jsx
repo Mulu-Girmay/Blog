@@ -87,7 +87,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-4 mb-8">
         <div className="magazine-card p-4 text-center">
           <div className="text-2xl font-serif font-bold text-burgundy">
             {questions.length}

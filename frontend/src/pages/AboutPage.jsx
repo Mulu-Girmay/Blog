@@ -24,7 +24,7 @@ export default function AboutPage() {
       {/* About Content */}
       <div className="space-y-8">
         {/* Mission */}
-        <div className="magazine-card p-8">
+        <div className="magazine-card p-5 md:p-8">
           <h2 className="text-2xl font-serif font-bold mb-4">Our Mission</h2>
           <p className="text-ink/80 leading-relaxed">
             This blog is dedicated to making the law{" "}
@@ -40,7 +40,7 @@ export default function AboutPage() {
         </div>
 
         {/* Author Section */}
-        <div className="magazine-card p-8">
+        <div className="magazine-card p-5 md:p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
             {/* Author Avatar */}
             <div className="w-32 h-32 rounded-full bg-burgundy/10 flex items-center justify-center text-5xl flex-shrink-0">
@@ -77,7 +77,7 @@ export default function AboutPage() {
         </div>
 
         {/* What You'll Find Here */}
-        <div className="magazine-card p-8">
+        <div className="magazine-card p-5 md:p-8">
           <h2 className="text-2xl font-serif font-bold mb-4">
             What You'll Find Here
           </h2>
@@ -114,7 +114,7 @@ export default function AboutPage() {
         </div>
 
         {/* Why This Blog is Different */}
-        <div className="magazine-card p-8 bg-burgundy/5 border-burgundy/10">
+        <div className="magazine-card p-5 md:p-8 bg-burgundy/5 border-burgundy/10">
           <h2 className="text-2xl font-serif font-bold mb-4">
             Why This Blog is Different
           </h2>
@@ -159,7 +159,7 @@ export default function AboutPage() {
         </div>
 
         {/* Disclaimer */}
-        <div className="magazine-card p-8 border border-amber-200 bg-amber-50/30">
+        <div className="magazine-card p-5 md:p-8 border border-amber-200 bg-amber-50/30">
           <h2 className="text-2xl font-serif font-bold text-amber-800 mb-3">
             ⚠️ Legal Disclaimer
           </h2>
@@ -177,7 +177,7 @@ export default function AboutPage() {
         </div>
 
         {/* Connect */}
-        <div className="magazine-card p-8 text-center">
+        <div className="magazine-card p-5 md:p-8 text-center">
           <h2 className="text-2xl font-serif font-bold mb-4">
             Connect With Me
           </h2>

@@ -82,18 +82,16 @@ export default function ArticlesPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-7xl">
-      {/* Header - Legal Archive Style */}
+    <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
+      {/* Header */}
       <div className="border-b-2 border-gold/30 pb-6 mb-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-serif font-bold text-ink tracking-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-ink tracking-tight">
               ARCHIVE <span className="text-burgundy">SELECTION</span>
             </h1>
             <p className="text-ink/60 mt-2 max-w-2xl text-sm leading-relaxed">
-              Clear, practical legal analysis for everyday people. Our articles
-              break down complex legal topics into actionable insights on
-              constitutional, civil, and commercial law.
+              Clear, practical legal analysis for everyday people.
             </p>
           </div>
           <div className="text-sm text-ink/40 font-mono tracking-wider">
@@ -145,38 +143,36 @@ export default function ArticlesPage() {
         </div>
       )}
 
-      {/* Filter Bar - Legal Style */}
-      <div className="flex flex-wrap items-center justify-between gap-4 py-4 border-b border-gold/10 mb-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex flex-wrap gap-1">
+      {/* Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 py-4 border-b border-gold/10 mb-6">
+        <div className="flex flex-wrap gap-1">
+          <button
+            onClick={() => setSearchParams({})}
+            className={`px-3 py-2 text-xs min-h-[36px] transition-colors ${
+              !categoryFilter && !searchParam
+                ? "text-burgundy font-serif font-semibold border-b-2 border-burgundy"
+                : "text-ink/50 hover:text-ink/80"
+            }`}
+          >
+            All
+          </button>
+          {categories.map((cat) => (
             <button
-              onClick={() => setSearchParams({})}
-              className={`px-3 py-1 text-xs transition-colors ${
-                !categoryFilter && !searchParam
+              key={cat}
+              onClick={() => handleCategoryClick(cat)}
+              className={`px-3 py-2 text-xs min-h-[36px] transition-colors ${
+                categoryFilter === cat
                   ? "text-burgundy font-serif font-semibold border-b-2 border-burgundy"
                   : "text-ink/50 hover:text-ink/80"
               }`}
             >
-              All
+              {cat}
             </button>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => handleCategoryClick(cat)}
-                className={`px-3 py-1 text-xs transition-colors ${
-                  categoryFilter === cat
-                    ? "text-burgundy font-serif font-semibold border-b-2 border-burgundy"
-                    : "text-ink/50 hover:text-ink/80"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          ))}
         </div>
         <div className="flex items-center gap-2 text-xs text-ink/40">
           <span>Sort by:</span>
-          <select className="bg-transparent border-none text-ink/60 focus:outline-none font-serif">
+          <select className="bg-transparent border-none text-ink/60 focus:outline-none font-serif py-1">
             <option>Most Recent</option>
             <option>Oldest</option>
             <option>Most Viewed</option>
@@ -205,9 +201,9 @@ export default function ArticlesPage() {
         </div>
       )}
 
-      {/* Pagination - Legal Style */}
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-10 pt-6 border-t border-gold/10">
+        <div className="flex justify-center items-center gap-3 mt-10 pt-6 border-t border-gold/10">
           <button
             onClick={() =>
               setSearchParams({
@@ -217,7 +213,7 @@ export default function ArticlesPage() {
               })
             }
             disabled={currentPage === 1}
-            className="px-4 py-2 text-sm border border-gold/20 rounded hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink"
+            className="px-5 py-2.5 min-h-[44px] text-sm border border-gold/20 rounded hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink"
           >
             Previous
           </button>
@@ -233,7 +229,7 @@ export default function ArticlesPage() {
               })
             }
             disabled={currentPage === totalPages}
-            className="px-4 py-2 text-sm border border-gold/20 rounded hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink"
+            className="px-5 py-2.5 min-h-[44px] text-sm border border-gold/20 rounded hover:bg-burgundy/5 transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-ink"
           >
             Next
           </button>

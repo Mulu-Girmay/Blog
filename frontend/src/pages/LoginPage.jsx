@@ -93,8 +93,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-16 max-w-md">
-      <div className="magazine-card p-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md sm:max-w-lg md:max-w-2xl">
+      <div className="magazine-card p-8 sm:p-10 md:p-14">
         <div className="text-center mb-8">
           <span className="text-4xl block mb-3">⚖️</span>
           <h1 className="text-2xl font-serif font-bold">
@@ -236,6 +237,7 @@ export default function LoginPage() {
           </p>
         )} */}
       </div>
+    </div>
     </div>
   );
 }
