@@ -87,14 +87,14 @@ export default function ArticlesPage() {
       <div className="border-b-2 border-gold/30 pb-6 mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-ink tracking-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-ink tracking-tight">
               ARCHIVE <span className="text-burgundy">SELECTION</span>
             </h1>
-            <p className="text-ink/60 mt-2 max-w-2xl text-sm leading-relaxed">
+            <p className="text-ink/60 mt-2 max-w-2xl text-base leading-relaxed">
               Clear, practical legal analysis for everyday people.
             </p>
           </div>
-          <div className="text-sm text-ink/40 font-mono tracking-wider">
+          <div className="text-base text-ink/40 font-mono tracking-wider">
             {totalPosts} {totalPosts === 1 ? "CASE" : "CASES"}
           </div>
         </div>
@@ -268,11 +268,11 @@ function ArticleCard({ post, index }) {
         {/* Left - Category Badge & Number */}
         <div className="md:w-32 flex-shrink-0 flex flex-row md:flex-col items-center md:items-start gap-3 md:gap-2">
           <span
-            className={`px-3 py-1 text-[10px] font-mono tracking-wider uppercase rounded ${categoryColor}`}
+            className={`px-3 py-1 text-xs font-mono tracking-wider uppercase rounded ${categoryColor}`}
           >
             {post.category || "General"}
           </span>
-          <span className="text-xs font-mono text-ink/20 group-hover:text-ink/40 transition-colors">
+          <span className="text-sm font-mono text-ink/20 group-hover:text-ink/40 transition-colors">
             #{String(index + 1).padStart(3, "0")}
           </span>
         </div>
@@ -280,14 +280,14 @@ function ArticleCard({ post, index }) {
         {/* Center - Content */}
         <div className="flex-1 min-w-0">
           <Link to={`/post/${post.slug}`}>
-            <h2 className="text-xl md:text-2xl font-serif font-bold text-ink group-hover:text-burgundy transition-colors leading-tight">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-ink group-hover:text-burgundy transition-colors leading-tight">
               {post.title}
             </h2>
           </Link>
-          <p className="text-sm text-ink/60 mt-2 leading-relaxed max-w-2xl">
+          <p className="text-base text-ink/60 mt-2 leading-relaxed max-w-2xl">
             {post.excerpt}
           </p>
-          <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-ink/40">
+          <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-ink/40">
             <span className="flex items-center gap-1">
               <FaUser className="text-[10px]" />{" "}
               {post.author?.name || "Kalayus Blog"}
@@ -311,7 +311,7 @@ function ArticleCard({ post, index }) {
         <div className="md:w-24 flex-shrink-0 flex items-center md:items-start justify-end">
           <Link
             to={`/post/${post.slug}`}
-            className="text-xs font-mono tracking-wider text-burgundy hover:underline flex items-center gap-1 group-hover:gap-2 transition-all"
+            className="text-sm font-mono tracking-wider text-burgundy hover:underline flex items-center gap-1 group-hover:gap-2 transition-all"
           >
             READ <span className="hidden sm:inline">MORE</span>{" "}
             <FaArrowRight className="text-[10px]" />

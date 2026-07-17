@@ -14,7 +14,7 @@ export default function PostCard({ post }) {
           style={{ backgroundImage: `url(${post.image})` }}
         />
       )}
-      <div className="flex items-center gap-2 text-xs text-ink/50 mb-2">
+      <div className="flex items-center gap-2 text-sm text-ink/50 mb-2">
         <span className="px-2 py-1 bg-burgundy/5 text-burgundy rounded-full">
           {post.category}
         </span>
@@ -24,12 +24,12 @@ export default function PostCard({ post }) {
         </span>
       </div>
       <Link to={`/post/${post.slug}`}>
-        <h3 className="font-serif text-xl font-bold leading-tight mb-2 hover:text-burgundy transition-colors">
+        <h3 className="font-serif text-2xl md:text-3xl font-bold leading-tight mb-2 hover:text-burgundy transition-colors">
           {post.title}
         </h3>
       </Link>
-      <p className="text-sm text-ink/70 line-clamp-2 mb-3">{post.excerpt}</p>
-      <div className="flex items-center justify-between text-sm">
+      <p className="text-base text-ink/70 line-clamp-2 mb-3">{post.excerpt}</p>
+      <div className="flex items-center justify-between text-base">
         <div className="flex items-center gap-2">
           <span className="font-serif text-sm">{post.author.name}</span>
         </div>

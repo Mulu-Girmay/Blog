@@ -69,7 +69,7 @@ export default function AskPage() {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-20 max-w-2xl">
-        <div className="magazine-card p-8 sm:p-12 text-center">
+        <div className="magazine-card p-12 text-center">
           <div className="text-6xl mb-6">🔒</div>
           <h2 className="text-3xl font-serif font-bold mb-4">
             Please Login to Ask a Question
@@ -105,7 +105,7 @@ export default function AskPage() {
   if (submitted) {
     return (
       <div className="container mx-auto px-4 py-20 max-w-2xl">
-        <div className="magazine-card p-8 sm:p-12 text-center">
+        <div className="magazine-card p-12 text-center">
           <div className="text-6xl mb-6">📬</div>
           <h2 className="text-3xl font-serif font-bold mb-4">
             Question Received!
@@ -139,12 +139,12 @@ export default function AskPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl">
+    <div className="container mx-auto px-4 py-12 max-w-3xl">
       {/* Header */}
-      <div className="text-center mb-8 md:mb-10">
-        <span className="text-4xl md:text-5xl block mb-4">⚖️</span>
-        <h1 className="text-3xl md:text-4xl font-serif font-bold">Ask a Legal Question</h1>
-        <p className="text-ink/60 mt-2 max-w-xl mx-auto text-sm md:text-base">
+      <div className="text-center mb-10">
+        <span className="text-5xl block mb-4">⚖️</span>
+        <h1 className="text-4xl font-serif font-bold">Ask a Legal Question</h1>
+        <p className="text-ink/60 mt-2 max-w-xl mx-auto">
           Have a legal question? Ask me! You'll get an email notification when
           answered.
         </p>
@@ -157,8 +157,8 @@ export default function AskPage() {
       </div>
 
       {/* Form */}
-      <div className="magazine-card p-5 md:p-8">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <div className="magazine-card p-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name */}
           <div>
             <label className="block font-serif font-semibold mb-2">
@@ -282,7 +282,6 @@ export default function AskPage() {
             </div>
           </div>
 
-          {/* Disclaimer */}
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
             <p className="text-xs text-amber-700">
               ⚖️ <strong>Disclaimer:</strong> This is for informational purposes
@@ -291,11 +290,10 @@ export default function AskPage() {
             </p>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-burgundy text-white py-3.5 rounded-lg font-serif hover:bg-burgundy/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-3 text-base min-h-[52px]"
+            className="w-full bg-burgundy text-white py-3 rounded-lg font-serif hover:bg-burgundy/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-3 text-lg"
           >
             {loading ? (
               "Submitting..."
@@ -308,8 +306,7 @@ export default function AskPage() {
         </form>
       </div>
 
-      {/* Info Box */}
-      <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="text-center p-4">
           <div className="text-2xl mb-2">🔒</div>
           <h4 className="font-serif font-semibold">Confidential</h4>
