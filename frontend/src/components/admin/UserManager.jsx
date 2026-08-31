@@ -49,7 +49,7 @@ export default function UserManager() {
         (t) => (
           <div className="magazine-card p-4 max-w-sm">
             <h4 className="font-serif font-bold text-burgundy">
-              📝 Author Created!
+              Author Created!
             </h4>
             <p className="text-sm mt-2">
               <strong>Username:</strong> {formData.username}

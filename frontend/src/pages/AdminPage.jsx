@@ -31,7 +31,9 @@ export default function AdminPage() {
   const { user, loading, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => window.innerWidth >= 1024,
+  );
   const [stats, setStats] = useState({
     totalPosts: 0,
     totalQuestions: 0,
@@ -166,7 +168,7 @@ export default function AdminPage() {
           totalUsers = 1;
         }
       }
-      
+
       // 4️⃣ Fetch total comments count (single query)
       let totalComments = 0;
       try {
@@ -421,7 +423,7 @@ export default function AdminPage() {
                   label="Questions"
                   value={stats.totalQuestions}
                   subtitle={`${stats.pendingQuestions} pending`}
-                  color="gold"
+                  color="burgundy"
                   trend={stats.pendingQuestions > 0 ? "⚠" : "✓"}
                 />
 
@@ -430,7 +432,7 @@ export default function AdminPage() {
                   label="Pending"
                   value={stats.pendingQuestions}
                   subtitle="Awaiting response"
-                  color="amber"
+                  color="burgundy"
                   trend={stats.pendingQuestions > 0 ? "!" : "✓"}
                 />
 
@@ -439,17 +441,8 @@ export default function AdminPage() {
                   label="Users"
                   value={stats.totalUsers}
                   subtitle={`${isAdmin ? "Registered" : "—"}`}
-                  color="navy"
+                  color="burgundy"
                   trend={stats.totalUsers > 1 ? "↑" : "•"}
-                />
-
-                <StatCard
-                  icon={<FaComments className="text-xl" />}
-                  label="Comments"
-                  value={stats.totalComments}
-                  subtitle="Engagement"
-                  color="purple"
-                  trend={stats.totalComments > 0 ? "💬" : "—"}
                 />
               </div>
 
