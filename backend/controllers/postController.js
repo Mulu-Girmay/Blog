@@ -1,4 +1,5 @@
 const Post = require("../models/Post");
+const User = require("../models/User");
 const slugify = require("slugify");
 const { sendNewPostNotification } = require("../services/emailService");
 const getPosts = async (req, res) => {

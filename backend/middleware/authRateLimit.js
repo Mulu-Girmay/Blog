@@ -2,7 +2,7 @@ const attempts = new Map();
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 10;
 
-module.exports = (req, res, next) => {
+const authRateLimit = (req, res, next) => {
   const now = Date.now();
   const key = req.ip;
   const entry = attempts.get(key);
@@ -23,3 +23,4 @@ module.exports = (req, res, next) => {
   entry.count += 1;
   return next();
 };
+module.exports = authRateLimit;

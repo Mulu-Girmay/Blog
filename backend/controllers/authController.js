@@ -1,8 +1,26 @@
-const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const JWT_SECRET = require("../config/jwt");
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const validateCredentials = ({ username, email, password }) => {
+  if (!username || !username.trim()) return "Username is required";
+  if (!email || !EMAIL_REGEX.test(email)) return "A valid email is required";
+  if (!password || password.length < 6)
+    return "Password must be at least 6 characters";
+  return null;
+};
+
 const registerUser = async (req, res) => {
   try {
     const { username, email, password, bio } = req.body;
+
+    const validationError = validateCredentials({ username, email, password });
+    if (validationError) {
+      return res.status(400).json({ error: validationError });
+    }
+
     const existing = await User.findOne({ $or: [{ username }, { email }] });
     if (existing) {
       return res
@@ -20,7 +38,7 @@ const registerUser = async (req, res) => {
     await user.save();
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: "7d" },
     );
 
@@ -91,7 +109,7 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: "7d" },
     );
 

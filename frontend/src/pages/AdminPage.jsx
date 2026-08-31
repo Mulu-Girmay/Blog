@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useDarkMode } from "../context/DarkModeContext";
 import { Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import PostEditor from "../components/admin/PostEditor";
 import PostManager from "../components/admin/PostManager";
@@ -23,12 +24,15 @@ import {
   FaClock,
   FaCheckCircle,
   FaExclamationCircle,
+  FaMoon,
+  FaSun,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import api from "../services/api";
 
 export default function AdminPage() {
   const { user, loading, logout } = useAuth();
+  const { darkMode, toggleDarkMode } = useDarkMode();
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -363,16 +367,6 @@ export default function AdminPage() {
           ))}
         </nav>
 
-        <div className="p-3 border-t border-gold/20">
-          <button
-            onClick={() => {
-              logout();
-            }}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
-          >
-            <FaSignOutAlt /> Logout
-          </button>
-        </div>
       </aside>
 
       {/* Main Content */}
@@ -412,6 +406,15 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={toggleDarkMode}
+                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+                title={darkMode ? "Light mode" : "Dark mode"}
+                className="p-2 rounded-lg text-ink/60 hover:text-burgundy hover:bg-burgundy/5 transition-colors"
+              >
+                {darkMode ? <FaSun className="text-gold" /> : <FaMoon />}
+              </button>
               {user.username === "admin" && (
                 <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">
                   ⚠️ Change default password
@@ -602,7 +605,7 @@ export default function AdminPage() {
 
           {/* Password Tab */}
           {activeTab === "password" && (
-            <div className="max-w-md">
+            <div className="max-w-md space-y-6">
               <div className="magazine-card p-6">
                 <h2 className="text-xl font-serif font-bold mb-4 text-ink">
                   🔑 Change Password
@@ -671,6 +674,21 @@ export default function AdminPage() {
                     {changingPassword ? "Changing..." : "Change Password"}
                   </button>
                 </form>
+              </div>
+              <div className="magazine-card p-6 border border-red-200">
+                <h2 className="text-xl font-serif font-bold mb-2 text-ink">
+                  Sign out
+                </h2>
+                <p className="text-sm text-ink/60 mb-4">
+                  End this session on this device.
+                </p>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="flex items-center gap-2 bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  <FaSignOutAlt /> Logout
+                </button>
               </div>
             </div>
           )}

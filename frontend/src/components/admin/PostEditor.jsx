@@ -238,11 +238,7 @@ export default function PostEditor() {
             onChange={handleContentChange}
             height={400}
             preview="edit"
-            className={!darkMode ? "light-mode-editor" : ""}
-            style={{
-              backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
-              color: darkMode ? "#e8e8e8" : "#2C2C2C",
-            }}
+            data-color-mode={darkMode ? "dark" : "light"}
           />
         </div>
       </div>
@@ -262,11 +258,7 @@ export default function PostEditor() {
             onChange={handlePlainEnglishChange}
             height={200}
             preview="edit"
-            className={!darkMode ? "light-mode-editor" : ""}
-            style={{
-              backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
-              color: darkMode ? "#e8e8e8" : "#2C2C2C",
-            }}
+            data-color-mode={darkMode ? "dark" : "light"}
           />
         </div>
       </div>

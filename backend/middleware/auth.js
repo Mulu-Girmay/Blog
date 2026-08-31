@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const JWT_SECRET = require("../config/jwt");
 
 module.exports = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ module.exports = async (req, res, next) => {
       return res.status(401).json({ error: "No token, authorization denied" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.id).select("-password");
 
     if (!user) {

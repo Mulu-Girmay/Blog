@@ -83,7 +83,6 @@ export default function ArticlesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 max-w-7xl">
-      {/* Header */}
       <div className="border-b-2 border-gold/30 pb-6 mb-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div>
@@ -100,7 +99,6 @@ export default function ArticlesPage() {
         </div>
       </div>
 
-      {/* Search Bar */}
       <div className="mb-6">
         <form onSubmit={handleSearch} className="flex gap-2">
           <div className="flex-1 relative">
@@ -129,7 +127,6 @@ export default function ArticlesPage() {
         </form>
       </div>
 
-      {/* Search Results Info */}
       {searchParam && (
         <div className="mb-4 text-sm text-ink/50">
           Showing results for:{" "}

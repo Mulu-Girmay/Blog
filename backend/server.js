@@ -5,51 +5,32 @@ const dotenv = require("dotenv");
 const path = require("path");
 const fs = require("fs");
 
-dotenv.config();
-
-if (!process.env.JWT_SECRET) {
-  console.error("JWT_SECRET must be set before the server can start.");
-  process.exit(1);
-}
-
-const configuredOrigins = (process.env.FRONTEND_ORIGIN || "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-const allowedOrigins = configuredOrigins.length
-  ? configuredOrigins
-  : process.env.NODE_ENV !== "production"
-    ? ["http://localhost:3000"]
-    : [];
-
-if (process.env.NODE_ENV === "production" && !allowedOrigins.length) {
-  console.error("FRONTEND_ORIGIN must be set in production.");
-  process.exit(1);
-}
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const uploadsPath = path.join(__dirname, "uploads");
 
 fs.mkdirSync(uploadsPath, { recursive: true });
-app.set("trust proxy", 1);
 
 // Middleware
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("Origin not allowed by CORS"));
-    },
-  }),
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(uploadsPath));
 
+const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/lawblog";
+
+// Log which database we're connecting to (credentials redacted) so a
+// mismatched .env location or wrong URI is obvious at a glance.
+console.log(
+  "🔌 Connecting to MongoDB:",
+  mongoUri.replace(/\/\/[^@]+@/, "//<credentials>@"),
+);
+
 mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/lawblog")
-  .then(() => console.log(" Database connected"))
-  .catch((err) => console.log(" Database error:", err));
+  .connect(mongoUri)
+  .then(() => console.log("✅ Database connected"))
+  .catch((err) => console.log("❌ Database error:", err));
 
 app.use("/api/posts", require("./routes/posts"));
 app.use("/api/auth", require("./routes/auth"));
@@ -63,5 +44,5 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
