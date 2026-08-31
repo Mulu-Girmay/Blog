@@ -16,6 +16,8 @@ services:
         sync: false
       - key: JWT_SECRET
         sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

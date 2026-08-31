@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const auth = require("../middleware/auth");
+const authRateLimit = require("../middleware/authRateLimit");
 const {
   registerUser,
   createAuthor,
@@ -12,9 +12,9 @@ const {
   updateProfile,
 } = require("../controllers/authController");
 
-router.post("/register", registerUser);
+router.post("/register", authRateLimit, registerUser);
 router.post("/create-author", auth, createAuthor);
-router.post("/login", loginUser);
+router.post("/login", authRateLimit, loginUser);
 router.get("/me", auth, currentUser);
 router.put("/change-password", auth, changePassword);
 router.put("/profile", auth, updateProfile);

@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const auth = require("../middleware/auth");
-
-// GET all users (admin only)
 router.get("/", auth, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -17,48 +15,6 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
-// ✅ NEW: Create author (admin only)
-router.post("/author", auth, async (req, res) => {
-  try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ error: "Only admins can create authors" });
-    }
-
-    const { username, email, password, bio } = req.body;
-
-    // Check if user exists
-    const existing = await User.findOne({ $or: [{ username }, { email }] });
-    if (existing) {
-      return res
-        .status(400)
-        .json({ error: "Username or email already exists" });
-    }
-
-    // ✅ Force role to 'author'
-    const user = new User({
-      username,
-      email,
-      password,
-      role: "author", // ← Always author
-      bio: bio || "Guest Author",
-    });
-
-    await user.save();
-
-    const userResponse = user.toObject();
-    delete userResponse.password;
-
-    res.status(201).json({
-      message: "Author created successfully!",
-      user: userResponse,
-      temporaryPassword: password,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// UPDATE user role (admin only)
 router.put("/:id/role", auth, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -70,7 +26,6 @@ router.put("/:id/role", auth, async (req, res) => {
       return res.status(400).json({ error: "Invalid role" });
     }
 
-    // ✅ Prevent demoting the last admin
     if (role !== "admin") {
       const adminCount = await User.countDocuments({ role: "admin" });
       const targetUser = await User.findById(req.params.id);
@@ -102,19 +57,15 @@ router.put("/:id/role", auth, async (req, res) => {
   }
 });
 
-// DELETE user (admin only)
 router.delete("/:id", auth, async (req, res) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ error: "Only admins can delete users" });
     }
 
-    // Prevent deleting yourself
     if (req.params.id === req.user.id) {
       return res.status(400).json({ error: "Cannot delete your own account" });
     }
-
-    // ✅ Prevent deleting the last admin
     const targetUser = await User.findById(req.params.id);
     if (targetUser.role === "admin") {
       const adminCount = await User.countDocuments({ role: "admin" });

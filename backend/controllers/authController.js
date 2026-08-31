@@ -1,5 +1,5 @@
 const User = require("../models/User");
-
+const jwt = require("jsonwebtoken");
 const registerUser = async (req, res) => {
   try {
     const { username, email, password, bio } = req.body;
@@ -20,7 +20,7 @@ const registerUser = async (req, res) => {
     await user.save();
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
-      process.env.JWT_SECRET || "lawblogsecret",
+      process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 
@@ -91,7 +91,7 @@ const loginUser = async (req, res) => {
 
     const token = jwt.sign(
       { id: user._id, username: user.username, role: user.role },
-      process.env.JWT_SECRET || "lawblogsecret",
+      process.env.JWT_SECRET,
       { expiresIn: "7d" },
     );
 

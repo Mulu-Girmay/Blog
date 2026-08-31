@@ -53,7 +53,7 @@ export default function HomePage() {
             <span className="inline-block text-4xl md:text-5xl mb-4">⚖️</span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight text-ink">
               Legal Clarity for
-              <span className="block text-burgundy">Everyday Life</span>
+              <span>Everyday Life</span>
             </h1>
             <p className="text-base sm:text-lg text-ink/70 mt-3 md:mt-4 max-w-2xl mx-auto px-4">
               Breaking down complex legal topics into clear, actionable

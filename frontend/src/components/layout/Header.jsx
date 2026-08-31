@@ -52,7 +52,7 @@ export default function Header() {
             </span>
             <div className="hidden sm:block">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-ink leading-tight">
-                Kalayus <span className="text-burgundy">Blog</span>
+                Kalayus <span>Blog</span>
               </h1>
               <p className="text-sm md:text-base text-ink/60 font-sans tracking-wider italic hidden sm:block">
                 Legal clarity in a complex world
@@ -196,7 +196,10 @@ export default function Header() {
                 autoFocus
                 className="w-full px-4 py-2.5 bg-white/70 border border-gold/20 rounded-lg focus:outline-none focus:border-burgundy/50 text-sm"
               />
-              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-burgundy">
+              <button
+                type="submit"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-ink/40 hover:text-burgundy"
+              >
                 <FaSearch className="text-sm" />
               </button>
             </div>
@@ -206,27 +209,45 @@ export default function Header() {
         {/* Hamburger dropdown menu - all sizes below lg */}
         {showMobileMenu && (
           <div className="lg:hidden mt-2 border-t border-gold/20 pt-2 flex flex-col">
-            <Link onClick={() => setShowMobileMenu(false)} to="/" className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors">
+            <Link
+              onClick={() => setShowMobileMenu(false)}
+              to="/"
+              className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors"
+            >
               Home
             </Link>
-            <Link onClick={() => setShowMobileMenu(false)} to="/articles" className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors">
+            <Link
+              onClick={() => setShowMobileMenu(false)}
+              to="/articles"
+              className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors"
+            >
               Articles
             </Link>
-            <Link onClick={() => setShowMobileMenu(false)} to="/ask" className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors flex items-center gap-2">
+            <Link
+              onClick={() => setShowMobileMenu(false)}
+              to="/ask"
+              className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors flex items-center gap-2"
+            >
               <FaQuestionCircle className="text-base" /> Ask
             </Link>
-            <Link onClick={() => setShowMobileMenu(false)} to="/about" className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors">
+            <Link
+              onClick={() => setShowMobileMenu(false)}
+              to="/about"
+              className="px-4 py-3 text-lg text-ink/80 hover:text-burgundy hover:bg-burgundy/5 transition-colors"
+            >
               About
             </Link>
             {user && (user.role === "admin" || user.role === "author") && (
-              <Link onClick={() => setShowMobileMenu(false)} to="/admin" className="px-4 py-3 text-lg text-burgundy hover:bg-burgundy/5 transition-colors flex items-center gap-2">
+              <Link
+                onClick={() => setShowMobileMenu(false)}
+                to="/admin"
+                className="px-4 py-3 text-lg text-burgundy hover:bg-burgundy/5 transition-colors flex items-center gap-2"
+              >
                 <FaPen className="text-base" /> Write
               </Link>
             )}
           </div>
         )}
-
-
       </div>
     </header>
   );
