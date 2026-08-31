@@ -1,0 +1,1 @@
+This directory stores uploaded images in local development. Production deployments require persistent object storage or the configured Render disk.

@@ -1,15 +1,10 @@
 const nodemailer = require("nodemailer");
-
-// Configure email transporter
-// For testing, we'll use Ethereal (fake SMTP)
-// For production, use SendGrid, Mailgun, or your SMTP provider
-
 let transporter;
 
 // Initialize email transporter
 const initTransporter = () => {
   // For development - use Ethereal (fake email service)
-  if (process.env.NODE_ENV === "development" || !process.env.SMTP_HOST) {
+  if (process.env.NODE_ENV !== "production") {
     return nodemailer.createTestAccount().then((account) => {
       return nodemailer.createTransport({
         host: "smtp.ethereal.email",
@@ -21,6 +16,18 @@ const initTransporter = () => {
         },
       });
     });
+  }
+
+  const requiredSettings = ["SMTP_HOST", "SMTP_USER", "SMTP_PASS"];
+  const missingSettings = requiredSettings.filter(
+    (setting) => !process.env[setting],
+  );
+  if (missingSettings.length) {
+    return Promise.reject(
+      new Error(
+        `Email is not configured for production. Missing: ${missingSettings.join(", ")}`,
+      ),
+    );
   }
 
   // For production - use real SMTP
@@ -197,25 +204,17 @@ const sendNewPostNotification = async (post, subscribers) => {
   `;
 
   // Send to all subscribers
-  const results = [];
-  for (const subscriber of subscribers) {
-    try {
-      await sendEmail({
-        to: subscriber.email,
-        subject,
-        html,
-      });
-      results.push({ email: subscriber.email, success: true });
-    } catch (error) {
-      results.push({
-        email: subscriber.email,
-        success: false,
-        error: error.message,
-      });
-    }
-  }
+  const results = await Promise.allSettled(
+    subscribers.map((subscriber) =>
+      sendEmail({ to: subscriber.email, subject, html }),
+    ),
+  );
 
-  return results;
+  return results.map((result, index) => ({
+    email: subscribers[index].email,
+    success: result.status === "fulfilled",
+    ...(result.status === "rejected" && { error: result.reason.message }),
+  }));
 };
 
 module.exports = {
