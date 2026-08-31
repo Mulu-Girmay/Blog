@@ -24,21 +24,6 @@ export default function AboutPage() {
       {/* About Content */}
       <div className="space-y-8">
         {/* Mission */}
-        <div className="magazine-card p-5 md:p-8">
-          <h2 className="text-2xl font-serif font-bold mb-4">Our Mission</h2>
-          <p className="text-ink/80 leading-relaxed">
-            This blog is dedicated to making the law{" "}
-            <strong>accessible, understandable, and approachable</strong> for
-            everyone. No jargon. No confusion. Just clear, practical legal
-            insights.
-          </p>
-          <p className="text-ink/80 leading-relaxed mt-3">
-            Whether you're dealing with a legal issue, curious about your
-            rights, or just want to understand how the law works — you're in the
-            right place.
-          </p>
-        </div>
-
         {/* Author Section */}
         <div className="magazine-card p-5 md:p-8">
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -74,6 +59,20 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
+        </div>
+        <div className="magazine-card p-5 md:p-8">
+          <h2 className="text-2xl font-serif font-bold mb-4">Our Mission</h2>
+          <p className="text-ink/80 leading-relaxed">
+            This blog is dedicated to making the law{" "}
+            <strong>accessible, understandable, and approachable</strong> for
+            everyone. No jargon. No confusion. Just clear, practical legal
+            insights.
+          </p>
+          <p className="text-ink/80 leading-relaxed mt-3">
+            Whether you're dealing with a legal issue, curious about your
+            rights, or just want to understand how the law works — you're in the
+            right place.
+          </p>
         </div>
 
         {/* What You'll Find Here */}

@@ -22,13 +22,14 @@ export default function ArticlesPage() {
 
   const categoryFilter = searchParams.get("category") || "";
   const searchParam = searchParams.get("search") || "";
+  const sortOrder = searchParams.get("sort") || "newest";
   const currentPage = parseInt(searchParams.get("page")) || 1;
   const postsPerPage = 9;
 
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, [categoryFilter, searchParam, currentPage]);
+  }, [categoryFilter, searchParam, sortOrder, currentPage]);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -38,6 +39,7 @@ export default function ArticlesPage() {
       params.append("page", currentPage);
       if (categoryFilter) params.append("category", categoryFilter);
       if (searchParam) params.append("search", searchParam);
+      if (sortOrder === "oldest") params.append("sort", "oldest");
 
       const res = await api.get(`/posts?${params.toString()}`);
       setPosts(res.data.posts);
@@ -51,12 +53,8 @@ export default function ArticlesPage() {
 
   const fetchCategories = async () => {
     try {
-      const res = await api.get("/posts");
-      const allPosts = res.data.posts || [];
-      const uniqueCategories = [
-        ...new Set(allPosts.map((p) => p.category).filter(Boolean)),
-      ];
-      setCategories(uniqueCategories);
+      const res = await api.get("/posts/categories");
+      setCategories(res.data || []);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
     }
@@ -87,7 +85,7 @@ export default function ArticlesPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
           <div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-ink tracking-tight">
-              ARCHIVE <span className="text-burgundy">SELECTION</span>
+              ARCHIVE <span>SELECTION</span>
             </h1>
             <p className="text-ink/60 mt-2 max-w-2xl text-base leading-relaxed">
               Clear, practical legal analysis for everyday people.
@@ -169,10 +167,20 @@ export default function ArticlesPage() {
         </div>
         <div className="flex items-center gap-2 text-xs text-ink/40">
           <span>Sort by:</span>
-          <select className="bg-transparent border-none text-ink/60 focus:outline-none font-serif py-1">
-            <option>Most Recent</option>
-            <option>Oldest</option>
-            <option>Most Viewed</option>
+          <select
+            value={sortOrder}
+            onChange={(e) =>
+              setSearchParams({
+                ...(categoryFilter && { category: categoryFilter }),
+                ...(searchParam && { search: searchParam }),
+                sort: e.target.value,
+                page: 1,
+              })
+            }
+            className="bg-transparent border-none text-ink/60 focus:outline-none font-serif py-1 cursor-pointer"
+          >
+            <option value="newest">Most Recent</option>
+            <option value="oldest">Oldest</option>
           </select>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useDarkMode } from "../context/DarkModeContext";
 import { Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import PostEditor from "../components/admin/PostEditor";
 import PostManager from "../components/admin/PostManager";
@@ -24,18 +23,15 @@ import {
   FaClock,
   FaCheckCircle,
   FaExclamationCircle,
-  FaMoon,
-  FaSun,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import api from "../services/api";
 
 export default function AdminPage() {
   const { user, loading, logout } = useAuth();
-  const { darkMode, toggleDarkMode } = useDarkMode();
   const location = useLocation();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth >= 1024);
   const [stats, setStats] = useState({
     totalPosts: 0,
     totalQuestions: 0,
@@ -111,13 +107,7 @@ export default function AdminPage() {
   const fetchStats = async () => {
     try {
       setLoadingStats(true);
-      console.log("📊 Fetching stats...");
-
-      // 1️⃣ Fetch ALL posts to get real count
-      console.log("📡 Fetching posts...");
       const postsRes = await api.get("/posts?limit=100");
-      console.log("📡 Posts response:", postsRes.data);
-
       let allPosts = [];
       if (postsRes.data.posts && Array.isArray(postsRes.data.posts)) {
         allPosts = postsRes.data.posts;
@@ -128,16 +118,11 @@ export default function AdminPage() {
       }
 
       const totalPosts = allPosts.length;
-      console.log(`📊 Total posts: ${totalPosts}`);
-
-      // 2️⃣ Fetch ALL questions
-      console.log("📡 Fetching questions...");
       let questions = [];
       let totalQuestions = 0;
       let pendingQuestions = 0;
       try {
         const questionsRes = await api.get("/questions");
-        console.log("📡 Questions response:", questionsRes.data);
 
         if (Array.isArray(questionsRes.data)) {
           questions = questionsRes.data;
@@ -158,17 +143,11 @@ export default function AdminPage() {
       } catch (err) {
         console.warn("⚠️ Could not fetch questions:", err.message);
       }
-      console.log(
-        `📊 Total questions: ${totalQuestions}, Pending: ${pendingQuestions}`,
-      );
 
-      // 3️⃣ Fetch users count (only if admin)
       let totalUsers = 1;
       if (isAdmin) {
         try {
-          console.log("📡 Fetching users...");
           const usersRes = await api.get("/users");
-          console.log("📡 Users response:", usersRes.data);
 
           if (Array.isArray(usersRes.data)) {
             totalUsers = usersRes.data.length;
@@ -183,30 +162,21 @@ export default function AdminPage() {
             totalUsers = 1;
           }
         } catch (err) {
-          console.warn("⚠️ Could not fetch users:", err.message);
+          console.warn(" Could not fetch users:", err.message);
           totalUsers = 1;
         }
       }
-      console.log(`📊 Total users: ${totalUsers}`);
-
-      // 4️⃣ Fetch comments count
+      
+      // 4️⃣ Fetch total comments count (single query)
       let totalComments = 0;
       try {
-        console.log("📡 Fetching comments...");
-        const commentsPromises = allPosts.map((post) =>
-          api.get(`/comments/post/${post._id}`).catch(() => ({ data: [] })),
-        );
-        const commentsResults = await Promise.all(commentsPromises);
-        totalComments = commentsResults.reduce(
-          (acc, res) => acc + (res.data?.length || 0),
-          0,
-        );
+        const commentsRes = await api.get("/comments/count");
+        totalComments = commentsRes.data?.count || 0;
       } catch (err) {
-        console.warn("⚠️ Could not fetch comments:", err.message);
+        console.warn("⚠️ Could not fetch comments count:", err.message);
       }
       console.log(`📊 Total comments: ${totalComments}`);
 
-      // 5️⃣ Update stats with real data
       const newStats = {
         totalPosts,
         totalQuestions,
@@ -216,16 +186,13 @@ export default function AdminPage() {
       };
 
       setStats(newStats);
-      console.log("✅ Stats updated:", newStats);
     } catch (err) {
-      console.error("❌ Failed to fetch stats:", err);
       toast.error("Failed to load stats. Please refresh.");
     } finally {
       setLoadingStats(false);
     }
   };
 
-  // Handle password change
   const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -276,7 +243,6 @@ export default function AdminPage() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [activeTab]);
 
-  // Refresh stats when user returns to dashboard
   useEffect(() => {
     if (activeTab === "dashboard") {
       fetchStats();
@@ -346,7 +312,10 @@ export default function AdminPage() {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => { handleTabChange(item.id); if (window.innerWidth < 1024) setSidebarOpen(false); }}
+              onClick={() => {
+                handleTabChange(item.id);
+                if (window.innerWidth < 1024) setSidebarOpen(false);
+              }}
               className={`
                 w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200
                 ${
@@ -367,6 +336,16 @@ export default function AdminPage() {
           ))}
         </nav>
 
+        <div className="p-3 border-t border-gold/20">
+          <button
+            onClick={() => {
+              logout();
+            }}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <FaSignOutAlt /> Logout
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
@@ -406,15 +385,6 @@ export default function AdminPage() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={toggleDarkMode}
-                aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-                title={darkMode ? "Light mode" : "Dark mode"}
-                className="p-2 rounded-lg text-ink/60 hover:text-burgundy hover:bg-burgundy/5 transition-colors"
-              >
-                {darkMode ? <FaSun className="text-gold" /> : <FaMoon />}
-              </button>
               {user.username === "admin" && (
                 <span className="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">
                   ⚠️ Change default password
@@ -605,7 +575,7 @@ export default function AdminPage() {
 
           {/* Password Tab */}
           {activeTab === "password" && (
-            <div className="max-w-md space-y-6">
+            <div className="max-w-md">
               <div className="magazine-card p-6">
                 <h2 className="text-xl font-serif font-bold mb-4 text-ink">
                   🔑 Change Password
@@ -674,21 +644,6 @@ export default function AdminPage() {
                     {changingPassword ? "Changing..." : "Change Password"}
                   </button>
                 </form>
-              </div>
-              <div className="magazine-card p-6 border border-red-200">
-                <h2 className="text-xl font-serif font-bold mb-2 text-ink">
-                  Sign out
-                </h2>
-                <p className="text-sm text-ink/60 mb-4">
-                  End this session on this device.
-                </p>
-                <button
-                  type="button"
-                  onClick={logout}
-                  className="flex items-center gap-2 bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  <FaSignOutAlt /> Logout
-                </button>
               </div>
             </div>
           )}

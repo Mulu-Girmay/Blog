@@ -62,14 +62,14 @@ export default function Header() {
 
           {/* Navigation - Desktop */}
           <nav className="hidden lg:flex items-center space-x-6 font-serif">
-            <Link
+            {/* <Link
               to="/"
               className="text-ink/80 hover:text-burgundy transition-colors text-base lg:text-lg"
             >
               Home
-            </Link>
+            </Link> */}
             <Link
-              to="/articles"
+              to="/"
               className="text-ink/80 hover:text-burgundy transition-colors text-base lg:text-lg"
             >
               Articles
@@ -96,22 +96,13 @@ export default function Header() {
             )}
           </nav>
 
-          {/* Right side actions */}
           <div className="flex items-center space-x-1 md:space-x-3">
-            {/* Hamburger - all sizes below lg */}
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
               className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-ink/60 hover:text-burgundy transition-colors rounded-full hover:bg-burgundy/10"
               aria-label="Menu"
             >
               {showMobileMenu ? <FaTimes /> : <FaBars />}
-            </button>
-            <button
-              onClick={() => setShowMobileSearch(!showMobileSearch)}
-              className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center text-ink/60 hover:text-burgundy transition-colors rounded-full hover:bg-burgundy/10"
-              aria-label="Search"
-            >
-              <FaSearch />
             </button>
 
             {/* Dark mode toggle */}

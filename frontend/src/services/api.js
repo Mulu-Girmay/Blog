@@ -16,4 +16,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Handle expired/invalid tokens globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      const isLoginRoute = error.config?.url?.includes("/auth/login");
+      if (!isLoginRoute) {
+        localStorage.removeItem("token");
+        delete api.defaults.headers.common["Authorization"];
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
 export default api;

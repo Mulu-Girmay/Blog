@@ -4,8 +4,9 @@ const slugify = require("slugify");
 const { sendNewPostNotification } = require("../services/emailService");
 const getPosts = async (req, res) => {
   try {
-    const { category, featured, search, limit = 10, page = 1 } = req.query;
+    const { category, featured, search, sort, limit = 10, page = 1 } = req.query;
     const query = {};
+    const sortOrder = sort === "oldest" ? 1 : -1;
 
     if (category) query.category = category;
     if (featured === "true") query.featured = true;
@@ -23,7 +24,7 @@ const getPosts = async (req, res) => {
     }
 
     const posts = await Post.find(query)
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: sortOrder })
       .limit(parseInt(limit))
       .skip((parseInt(page) - 1) * parseInt(limit));
 
@@ -97,7 +98,7 @@ const createPost = async (req, res) => {
         bio: req.user.bio || "",
         avatar: req.user.avatar || "",
       },
-      readTime: Math.ceil(content.split(" ").length / 200),
+      readTime: Math.ceil(content.replace(/[#*_`>\-\[\]()!]/g, "").split(/\s+/).filter(Boolean).length / 200),
     });
 
     await post.save();
@@ -145,12 +146,17 @@ const updatePost = async (req, res) => {
     } = req.body;
 
     if (title) {
+      const newSlug = slugify(title, { lower: true, strict: true });
+      const conflict = await Post.findOne({ slug: newSlug, _id: { $ne: post._id } });
+      if (conflict) {
+        return res.status(400).json({ error: "A post with this title already exists" });
+      }
       post.title = title;
-      post.slug = slugify(title, { lower: true, strict: true });
+      post.slug = newSlug;
     }
     if (content) {
       post.content = content;
-      post.readTime = Math.ceil(content.split(" ").length / 200);
+      post.readTime = Math.ceil(content.replace(/[#*_`>\-\[\]()!]/g, "").split(/\s+/).filter(Boolean).length / 200);
     }
     if (excerpt) post.excerpt = excerpt;
     if (category) post.category = category;

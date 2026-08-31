@@ -154,7 +154,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {posts.length === 0 ? (
+        {posts.length === 0 && !featured ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📝</div>
             <h3 className="text-xl font-serif font-semibold text-ink">

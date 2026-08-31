@@ -17,7 +17,7 @@ function App() {
     <AuthProvider>
       <Layout>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<ArticlesPage />} />
           <Route path="/post/:slug" element={<PostPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/write" element={<AdminPage />} />
@@ -25,7 +25,6 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/ask" element={<AskPage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/articles" element={<ArticlesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Routes>
       </Layout>

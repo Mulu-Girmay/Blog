@@ -1,5 +1,14 @@
 const Comment = require("../models/Comment");
 
+exports.getTotalCount = async (req, res) => {
+  try {
+    const count = await Comment.countDocuments({ isApproved: true });
+    res.json({ count });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.getPostComments = async (req, res) => {
   try {
     const comments = await Comment.find({ postId: req.params.postId, isApproved: true, parentCommentId: null })
@@ -21,10 +30,31 @@ exports.createComment = async (req, res) => {
   try {
     const { postId, content, parentCommentId } = req.body;
     if (!content || !postId) return res.status(400).json({ error: "Post ID and content are required" });
-    const comment = await Comment.create({ postId, author: req.user.id, content, parentCommentId: parentCommentId || null });
+    const comment = await Comment.create({
+      postId,
+      author: req.user.id,
+      content,
+      parentCommentId: parentCommentId || null,
+      isApproved: false, // Held for moderation
+    });
     if (parentCommentId) await Comment.findByIdAndUpdate(parentCommentId, { $push: { replies: comment._id } });
     await comment.populate("author", "username");
-    res.status(201).json(comment);
+    res.status(201).json({ ...comment.toObject(), pending: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.approveComment = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") return res.status(403).json({ error: "Only admins can approve comments" });
+    const comment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      { isApproved: true },
+      { new: true }
+    ).populate("author", "username");
+    if (!comment) return res.status(404).json({ error: "Comment not found" });
+    res.json(comment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

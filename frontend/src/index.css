@@ -1,7 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
-
 @theme {
   --color-paper: #fdf6e3;
   --color-paper-dark: #f5ecd7;
@@ -18,12 +17,10 @@
   --color-cream: #fff8ee;
   --color-navy: #1a2a3a;
 
-  /* Fonts */
   --font-serif: "Playfair Display", Georgia, serif;
   --font-body: Mercury, Georgia, serif;
   --font-sans: Inter, sans-serif;
 
-  /* Shadows */
   --shadow-magazine:
     0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-magazine-hover:
