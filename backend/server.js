@@ -13,20 +13,13 @@ const uploadsPath = path.join(__dirname, "uploads");
 fs.mkdirSync(uploadsPath, { recursive: true });
 
 // Middleware
-app.use(
-  cors({
-    origin: process.env.ALLOWED_ORIGIN || "http://localhost:5173",
-    credentials: true,
-  }),
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(uploadsPath));
 
 const mongoUri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/lawblog";
 
-// Log which database we're connecting to (credentials redacted) so a
-// mismatched .env location or wrong URI is obvious at a glance.
 console.log(
   "🔌 Connecting to MongoDB:",
   mongoUri.replace(/\/\/[^@]+@/, "//<credentials>@"),
