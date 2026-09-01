@@ -35,6 +35,7 @@ export default function CommentSection({ postId }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [showAllComments, setShowAllComments] = useState(false);
+  const [sectionExpanded, setSectionExpanded] = useState(true);
   const textareaRef = useRef(null);
   const replyTextareaRef = useRef(null);
 
@@ -149,11 +150,10 @@ export default function CommentSection({ postId }) {
       return;
     }
     try {
-      console.log(`👍 Reacting to comment ${commentId} with ${reaction}`);
+      console.log(` Reacting to comment ${commentId} with ${reaction}`);
       const res = await api.post(`/comments/${commentId}/react`, { reaction });
-      console.log("✅ Reaction response:", res.data);
+      console.log(" Reaction response:", res.data);
 
-      // Update comment reactions
       const updatedComments = comments.map((comment) => {
         if (comment._id === commentId) {
           return {
@@ -184,7 +184,7 @@ export default function CommentSection({ postId }) {
 
       setComments(updatedComments);
     } catch (err) {
-      console.error("❌ Reaction error:", err.response?.data || err.message);
+      console.error(" Reaction error:", err.response?.data || err.message);
       if (err.response?.status === 404) {
         toast.error("Reaction endpoint not found. Please check server.");
       } else if (err.response?.status === 401) {
@@ -219,182 +219,195 @@ export default function CommentSection({ postId }) {
             {comments.length}
           </span>
         </div>
-        <button
-          onClick={() => {
-            document
-              .querySelector(".comment-form")
-              ?.scrollIntoView({ behavior: "smooth" });
-          }}
-          className="text-sm text-burgundy hover:underline font-serif"
-        >
-          Add Comment
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              document
+                .querySelector(".comment-form")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="text-sm text-burgundy hover:underline font-serif"
+          >
+            Add Comment
+          </button>
+          <button
+            onClick={() => setSectionExpanded(!sectionExpanded)}
+            className="p-2 hover:bg-burgundy/10 rounded-full transition-colors text-burgundy"
+            title={sectionExpanded ? "Collapse" : "Expand"}
+          >
+            {sectionExpanded ? <FaChevronUp /> : <FaChevronDown />}
+          </button>
+        </div>
       </div>
 
       {/* Comment Form - Social Media Style */}
-      {user ? (
-        <form onSubmit={handleSubmit} className="comment-form mb-8">
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-burgundy/10 flex items-center justify-center flex-shrink-0 text-lg font-serif font-bold text-burgundy">
-              {user.username?.charAt(0).toUpperCase() || "👤"}
-            </div>
-            <div className="flex-1 relative">
-              <textarea
-                ref={textareaRef}
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment..."
-                rows={newComment ? 3 : 1}
-                className="w-full px-4 py-3 bg-white/50 dark:bg-ink/5 border border-gold/20 rounded-2xl focus:outline-none focus:border-burgundy/50 focus:ring-2 focus:ring-burgundy/10 transition-all resize-none text-ink placeholder:text-ink/40"
-                onFocus={() => setShowEmojiPicker(false)}
-              />
-              <div className="flex items-center justify-between mt-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className="text-ink/40 hover:text-burgundy transition-colors p-2 rounded-full hover:bg-burgundy/5"
-                  >
-                    <FaSmile />
-                  </button>
-                  {showEmojiPicker && (
-                    <div className="absolute top-[-200px] left-0 right-0 sm:right-auto bg-cream dark:bg-ink/10 border border-gold/20 rounded-lg shadow-lg p-3 z-10 w-full sm:w-64">
-                      <div className="flex flex-wrap gap-1">
-                        {[
-                          "😊",
-                          "😂",
-                          "❤️",
-                          "👍",
-                          "👏",
-                          "🔥",
-                          "💡",
-                          "🤔",
-                          "😮",
-                          "🙏",
-                          "⚖️",
-                          "📚",
-                        ].map((emoji) => (
-                          <button
-                            key={emoji}
-                            type="button"
-                            onClick={() => handleEmojiClick(emoji)}
-                            className="text-2xl hover:bg-burgundy/10 rounded p-1 transition-colors"
-                          >
-                            {emoji}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+      {sectionExpanded && (
+        <>
+          {user ? (
+            <form onSubmit={handleSubmit} className="comment-form mb-8">
+              <div className="flex gap-3">
+                <div className="w-10 h-10 rounded-full bg-burgundy/10 flex items-center justify-center flex-shrink-0 text-lg font-serif font-bold text-burgundy">
+                  {user.username?.charAt(0).toUpperCase() || "👤"}
                 </div>
-                <button
-                  type="submit"
-                  disabled={submitting || !newComment.trim()}
-                  className="flex items-center gap-2 bg-burgundy text-white px-6 py-2 rounded-full hover:bg-burgundy/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <FaPaperPlane className="text-sm" />
-                  {submitting ? "Posting..." : "Post"}
-                </button>
+                <div className="flex-1 relative">
+                  <textarea
+                    ref={textareaRef}
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Write a comment..."
+                    rows={newComment ? 3 : 1}
+                    className="w-full px-4 py-3 bg-white/50 dark:bg-ink/5 border border-gold/20 rounded-2xl focus:outline-none focus:border-burgundy/50 focus:ring-2 focus:ring-burgundy/10 transition-all resize-none text-ink placeholder:text-ink/40"
+                    onFocus={() => setShowEmojiPicker(false)}
+                  />
+                  <div className="flex items-center justify-between mt-2">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        className="text-ink/40 hover:text-burgundy transition-colors p-2 rounded-full hover:bg-burgundy/5"
+                      >
+                        <FaSmile />
+                      </button>
+                      {showEmojiPicker && (
+                        <div className="absolute top-[-200px] left-0 right-0 sm:right-auto bg-cream dark:bg-ink/10 border border-gold/20 rounded-lg shadow-lg p-3 z-10 w-full sm:w-64">
+                          <div className="flex flex-wrap gap-1">
+                            {[
+                              "😊",
+                              "😂",
+                              "❤️",
+                              "👍",
+                              "👏",
+                              "🔥",
+                              "💡",
+                              "🤔",
+                              "😮",
+                              "🙏",
+                              "⚖️",
+                              "📚",
+                            ].map((emoji) => (
+                              <button
+                                key={emoji}
+                                type="button"
+                                onClick={() => handleEmojiClick(emoji)}
+                                className="text-2xl hover:bg-burgundy/10 rounded p-1 transition-colors"
+                              >
+                                {emoji}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={submitting || !newComment.trim()}
+                      className="flex items-center gap-2 bg-burgundy text-white px-6 py-2 rounded-full hover:bg-burgundy/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <FaPaperPlane className="text-sm" />
+                      {submitting ? "sending..." : "send"}
+                    </button>
+                  </div>
+                </div>
               </div>
+            </form>
+          ) : (
+            <div className="bg-cream dark:bg-ink/5 p-6 rounded-2xl mb-8 text-center border border-gold/10">
+              <p className="text-ink/60">
+                Join the conversation!{" "}
+                <Link
+                  to="/login"
+                  className="text-burgundy hover:underline font-serif"
+                >
+                  Login
+                </Link>{" "}
+                or{" "}
+                <Link
+                  to="/login"
+                  className="text-burgundy hover:underline font-serif"
+                >
+                  Register
+                </Link>{" "}
+                to comment
+              </p>
             </div>
-          </div>
-        </form>
-      ) : (
-        <div className="bg-cream dark:bg-ink/5 p-6 rounded-2xl mb-8 text-center border border-gold/10">
-          <p className="text-ink/60">
-            Join the conversation!{" "}
-            <Link
-              to="/login"
-              className="text-burgundy hover:underline font-serif"
-            >
-              Login
-            </Link>{" "}
-            or{" "}
-            <Link
-              to="/login"
-              className="text-burgundy hover:underline font-serif"
-            >
-              Register
-            </Link>{" "}
-            to comment
-          </p>
-        </div>
-      )}
-
-      {/* Show/Hide Comments Toggle */}
-      {comments.length > 0 && (
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-sm text-ink/40">
-            Showing {visibleComments.length} of {comments.length} comments
-          </span>
-          {hasMoreComments && (
-            <button
-              onClick={() => setShowAllComments(!showAllComments)}
-              className="flex items-center gap-2 text-sm text-burgundy hover:underline font-serif transition-colors"
-            >
-              {showAllComments ? (
-                <>
-                  <FaChevronUp /> Show Less
-                </>
-              ) : (
-                <>
-                  <FaChevronDown /> Show All ({comments.length})
-                </>
-              )}
-            </button>
           )}
-        </div>
-      )}
 
-      {/* Comments List - Social Media Style */}
-      <div className="space-y-4">
-        {visibleComments.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-3">💬</div>
-            <p className="text-ink/40">
-              No comments yet. Start the conversation!
-            </p>
+          {/* Show/Hide Comments Toggle */}
+          {comments.length > 0 && (
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-ink/40">
+                Showing {visibleComments.length} of {comments.length} comments
+              </span>
+              {hasMoreComments && (
+                <button
+                  onClick={() => setShowAllComments(!showAllComments)}
+                  className="flex items-center gap-2 text-sm text-burgundy hover:underline font-serif transition-colors"
+                >
+                  {showAllComments ? (
+                    <>
+                      <FaChevronUp /> Show Less
+                    </>
+                  ) : (
+                    <>
+                      <FaChevronDown /> Show All ({comments.length})
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Comments List - Social Media Style */}
+          <div className="space-y-4">
+            {visibleComments.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-3">💬</div>
+                <p className="text-ink/40">
+                  No comments yet. Start the conversation!
+                </p>
+              </div>
+            ) : (
+              visibleComments.map((comment) => (
+                <CommentItem
+                  key={comment._id}
+                  comment={comment}
+                  user={user}
+                  onReply={(id) => {
+                    setReplyingTo(id);
+                    setReplyContent("");
+                    setTimeout(() => replyTextareaRef.current?.focus(), 100);
+                  }}
+                  onDelete={handleDelete}
+                  onReact={handleReact}
+                  replyingTo={replyingTo}
+                  replyContent={replyContent}
+                  setReplyContent={setReplyContent}
+                  handleReply={handleReply}
+                  submitting={submitting}
+                  isAdmin={user?.role === "admin"}
+                  replyTextareaRef={replyTextareaRef}
+                  activeDropdown={activeDropdown}
+                  setActiveDropdown={setActiveDropdown}
+                  postAuthorId={
+                    comments.length > 0 ? comments[0]?.author?._id : null
+                  }
+                />
+              ))
+            )}
           </div>
-        ) : (
-          visibleComments.map((comment) => (
-            <CommentItem
-              key={comment._id}
-              comment={comment}
-              user={user}
-              onReply={(id) => {
-                setReplyingTo(id);
-                setReplyContent("");
-                setTimeout(() => replyTextareaRef.current?.focus(), 100);
-              }}
-              onDelete={handleDelete}
-              onReact={handleReact}
-              replyingTo={replyingTo}
-              replyContent={replyContent}
-              setReplyContent={setReplyContent}
-              handleReply={handleReply}
-              submitting={submitting}
-              isAdmin={user?.role === "admin"}
-              replyTextareaRef={replyTextareaRef}
-              activeDropdown={activeDropdown}
-              setActiveDropdown={setActiveDropdown}
-              postAuthorId={
-                comments.length > 0 ? comments[0]?.author?._id : null
-              }
-            />
-          ))
-        )}
-      </div>
 
-      {/* Show All button at bottom */}
-      {hasMoreComments && !showAllComments && (
-        <div className="text-center mt-6">
-          <button
-            onClick={() => setShowAllComments(true)}
-            className="text-sm text-ink/40 hover:text-burgundy transition-colors font-serif"
-          >
-            Load all {comments.length} comments
-          </button>
-        </div>
+          {/* Show All button at bottom */}
+          {hasMoreComments && !showAllComments && (
+            <div className="text-center mt-6">
+              <button
+                onClick={() => setShowAllComments(true)}
+                className="text-sm text-ink/40 hover:text-burgundy transition-colors font-serif"
+              >
+                Load all {comments.length} comments
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -419,6 +432,7 @@ function CommentItem({
   postAuthorId,
 }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const [showReplies, setShowReplies] = useState(true);
   const isAuthor = user?._id === comment.author?._id;
   const isCommentAuthor = comment.author?._id === postAuthorId;
   const canDelete = isAdmin || isAuthor;
@@ -608,27 +622,41 @@ function CommentItem({
 
       {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="ml-6 sm:ml-12 mt-3 space-y-3 border-l-2 border-gold/20 pl-3 sm:pl-4">
-          {comment.replies.map((reply) => (
-            <CommentItem
-              key={reply._id}
-              comment={reply}
-              user={user}
-              onReply={onReply}
-              onDelete={onDelete}
-              onReact={onReact}
-              replyingTo={replyingTo}
-              replyContent={replyContent}
-              setReplyContent={setReplyContent}
-              handleReply={handleReply}
-              submitting={submitting}
-              isAdmin={isAdmin}
-              replyTextareaRef={replyTextareaRef}
-              activeDropdown={activeDropdown}
-              setActiveDropdown={setActiveDropdown}
-              postAuthorId={postAuthorId}
-            />
-          ))}
+        <div className="mt-3">
+          <button
+            onClick={() => setShowReplies(!showReplies)}
+            className="flex items-center gap-2 text-sm text-ink/60 hover:text-burgundy transition-colors ml-6 sm:ml-12 mb-3 font-serif"
+          >
+            {showReplies ? <FaChevronUp /> : <FaChevronDown />}
+            <span>
+              {comment.replies.length}{" "}
+              {comment.replies.length === 1 ? "reply" : "replies"}
+            </span>
+          </button>
+          {showReplies && (
+            <div className="ml-6 sm:ml-12 space-y-3 border-l-2 border-gold/20 pl-3 sm:pl-4">
+              {comment.replies.map((reply) => (
+                <CommentItem
+                  key={reply._id}
+                  comment={reply}
+                  user={user}
+                  onReply={onReply}
+                  onDelete={onDelete}
+                  onReact={onReact}
+                  replyingTo={replyingTo}
+                  replyContent={replyContent}
+                  setReplyContent={setReplyContent}
+                  handleReply={handleReply}
+                  submitting={submitting}
+                  isAdmin={isAdmin}
+                  replyTextareaRef={replyTextareaRef}
+                  activeDropdown={activeDropdown}
+                  setActiveDropdown={setActiveDropdown}
+                  postAuthorId={postAuthorId}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -157,24 +157,6 @@ export default function AboutPage() {
           </ul>
         </div>
 
-        {/* Disclaimer */}
-        <div className="magazine-card p-5 md:p-8 border border-amber-200 bg-amber-50/30">
-          <h2 className="text-2xl font-serif font-bold text-amber-800 mb-3">
-            ⚠️ Legal Disclaimer
-          </h2>
-          <p className="text-sm text-amber-700 leading-relaxed">
-            The content on this blog is for{" "}
-            <strong>informational purposes only</strong>
-            and does not constitute legal advice. Every legal situation is
-            unique, and laws vary by jurisdiction. Always consult a qualified
-            attorney for advice specific to your situation.
-          </p>
-          <p className="text-sm text-amber-700 leading-relaxed mt-2">
-            Reading this blog does not create an attorney-client relationship
-            between you and the author.
-          </p>
-        </div>
-
         {/* Connect */}
         <div className="magazine-card p-5 md:p-8 text-center">
           <h2 className="text-2xl font-serif font-bold mb-4">
